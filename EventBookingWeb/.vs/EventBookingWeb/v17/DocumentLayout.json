@@ -1,0 +1,300 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\\u0110AHP2\\EventBookingWeb\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\\u0110AHP2\\EventBookingWeb\\Migrations\\20251103184629_updateNameTable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Migrations\\20251103184629_updateNameTable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|d:\\\u0111ahp2\\eventbookingweb\\models\\domainmodels\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|solutionrelative:models\\domainmodels\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|d:\\\u0111ahp2\\eventbookingweb\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|d:\\\u0111ahp2\\eventbookingweb\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\\u0110AHP2\\EventBookingWeb\\Migrations\\20251103183715_initDB.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Migrations\\20251103183715_initDB.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|d:\\\u0111ahp2\\eventbookingweb\\models\\domainmodels\\dbcategoryevent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|solutionrelative:models\\domainmodels\\dbcategoryevent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|d:\\\u0111ahp2\\eventbookingweb\\models\\domainmodels\\dbuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|solutionrelative:models\\domainmodels\\dbuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|d:\\\u0111ahp2\\eventbookingweb\\models\\domainmodels\\dbnews.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|solutionrelative:models\\domainmodels\\dbnews.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|d:\\\u0111ahp2\\eventbookingweb\\models\\domainmodels\\dbevent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|solutionrelative:models\\domainmodels\\dbevent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|d:\\\u0111ahp2\\eventbookingweb\\models\\domainmodels\\dbticket.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|solutionrelative:models\\domainmodels\\dbticket.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|d:\\\u0111ahp2\\eventbookingweb\\models\\domainmodels\\dbbooking.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|solutionrelative:models\\domainmodels\\dbbooking.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|d:\\\u0111ahp2\\eventbookingweb\\models\\enums\\eventstatus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|solutionrelative:models\\enums\\eventstatus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|d:\\\u0111ahp2\\eventbookingweb\\models\\enums\\userrole.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|solutionrelative:models\\enums\\userrole.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|d:\\\u0111ahp2\\eventbookingweb\\models\\enums\\userstatus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|solutionrelative:models\\enums\\userstatus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|d:\\\u0111ahp2\\eventbookingweb\\models\\enums\\paymentstatus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|solutionrelative:models\\enums\\paymentstatus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|d:\\\u0111ahp2\\eventbookingweb\\models\\domainmodels\\dbbanner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBD65FA4-C033-41AD-AD6D-FAF01E42B696}|EventBookingWeb.csproj|solutionrelative:models\\domainmodels\\dbbanner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "20251103184629_updateNameTable.cs",
+              "DocumentMoniker": "D:\\\u0110AHP2\\EventBookingWeb\\Migrations\\20251103184629_updateNameTable.cs",
+              "RelativeDocumentMoniker": "Migrations\\20251103184629_updateNameTable.cs",
+              "ToolTip": "D:\\\u0110AHP2\\EventBookingWeb\\Migrations\\20251103184629_updateNameTable.cs",
+              "RelativeToolTip": "Migrations\\20251103184629_updateNameTable.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T18:46:29.897Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "20251103183715_initDB.cs",
+              "DocumentMoniker": "D:\\\u0110AHP2\\EventBookingWeb\\Migrations\\20251103183715_initDB.cs",
+              "RelativeDocumentMoniker": "Migrations\\20251103183715_initDB.cs",
+              "ToolTip": "D:\\\u0110AHP2\\EventBookingWeb\\Migrations\\20251103183715_initDB.cs",
+              "RelativeToolTip": "Migrations\\20251103183715_initDB.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T18:37:15.793Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\\u0110AHP2\\EventBookingWeb\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "D:\\\u0110AHP2\\EventBookingWeb\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAABGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-11-03T18:32:29.999Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\\u0110AHP2\\EventBookingWeb\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\\u0110AHP2\\EventBookingWeb\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAABaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T18:31:11.055Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ApplicationDbContext.cs",
+              "DocumentMoniker": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\DomainModels\\ApplicationDbContext.cs",
+              "RelativeDocumentMoniker": "Models\\DomainModels\\ApplicationDbContext.cs",
+              "ToolTip": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\DomainModels\\ApplicationDbContext.cs",
+              "RelativeToolTip": "Models\\DomainModels\\ApplicationDbContext.cs",
+              "ViewState": "AgIAABsAAAAAAAAAAAAIwBIAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T18:18:16.775Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "DBUser.cs",
+              "DocumentMoniker": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\DomainModels\\DBUser.cs",
+              "RelativeDocumentMoniker": "Models\\DomainModels\\DBUser.cs",
+              "ToolTip": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\DomainModels\\DBUser.cs",
+              "RelativeToolTip": "Models\\DomainModels\\DBUser.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T17:47:41.121Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "DBCategoryEvent.cs",
+              "DocumentMoniker": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\DomainModels\\DBCategoryEvent.cs",
+              "RelativeDocumentMoniker": "Models\\DomainModels\\DBCategoryEvent.cs",
+              "ToolTip": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\DomainModels\\DBCategoryEvent.cs",
+              "RelativeToolTip": "Models\\DomainModels\\DBCategoryEvent.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T17:45:29.544Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "DBTicket.cs",
+              "DocumentMoniker": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\DomainModels\\DBTicket.cs",
+              "RelativeDocumentMoniker": "Models\\DomainModels\\DBTicket.cs",
+              "ToolTip": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\DomainModels\\DBTicket.cs",
+              "RelativeToolTip": "Models\\DomainModels\\DBTicket.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T17:46:41.556Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "EventStatus.cs",
+              "DocumentMoniker": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\Enums\\EventStatus.cs",
+              "RelativeDocumentMoniker": "Models\\Enums\\EventStatus.cs",
+              "ToolTip": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\Enums\\EventStatus.cs",
+              "RelativeToolTip": "Models\\Enums\\EventStatus.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T17:48:38.773Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "DBBooking.cs",
+              "DocumentMoniker": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\DomainModels\\DBBooking.cs",
+              "RelativeDocumentMoniker": "Models\\DomainModels\\DBBooking.cs",
+              "ToolTip": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\DomainModels\\DBBooking.cs",
+              "RelativeToolTip": "Models\\DomainModels\\DBBooking.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T17:34:09.524Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "DBEvent.cs",
+              "DocumentMoniker": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\DomainModels\\DBEvent.cs",
+              "RelativeDocumentMoniker": "Models\\DomainModels\\DBEvent.cs",
+              "ToolTip": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\DomainModels\\DBEvent.cs",
+              "RelativeToolTip": "Models\\DomainModels\\DBEvent.cs",
+              "ViewState": "AgIAAAcAAAAAAAAAAAAQwBUAAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T17:35:09.001Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "DBNews.cs",
+              "DocumentMoniker": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\DomainModels\\DBNews.cs",
+              "RelativeDocumentMoniker": "Models\\DomainModels\\DBNews.cs",
+              "ToolTip": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\DomainModels\\DBNews.cs",
+              "RelativeToolTip": "Models\\DomainModels\\DBNews.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T17:46:13.872Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "UserRole.cs",
+              "DocumentMoniker": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\Enums\\UserRole.cs",
+              "RelativeDocumentMoniker": "Models\\Enums\\UserRole.cs",
+              "ToolTip": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\Enums\\UserRole.cs",
+              "RelativeToolTip": "Models\\Enums\\UserRole.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T17:49:48.355Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "UserStatus.cs",
+              "DocumentMoniker": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\Enums\\UserStatus.cs",
+              "RelativeDocumentMoniker": "Models\\Enums\\UserStatus.cs",
+              "ToolTip": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\Enums\\UserStatus.cs",
+              "RelativeToolTip": "Models\\Enums\\UserStatus.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T17:50:23.051Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "PaymentStatus.cs",
+              "DocumentMoniker": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\Enums\\PaymentStatus.cs",
+              "RelativeDocumentMoniker": "Models\\Enums\\PaymentStatus.cs",
+              "ToolTip": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\Enums\\PaymentStatus.cs",
+              "RelativeToolTip": "Models\\Enums\\PaymentStatus.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T17:49:11.425Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "DBBanner.cs",
+              "DocumentMoniker": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\DomainModels\\DBBanner.cs",
+              "RelativeDocumentMoniker": "Models\\DomainModels\\DBBanner.cs",
+              "ToolTip": "D:\\\u0110AHP2\\EventBookingWeb\\Models\\DomainModels\\DBBanner.cs",
+              "RelativeToolTip": "Models\\DomainModels\\DBBanner.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T17:33:18.949Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
