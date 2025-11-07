@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace EventBookingWeb.Models.DomainModels
 {
-    public class DBUser : IdentityUser
+    public class DBUser
     {
-        //public required int UserId { get; set; }
+        public required int UserId { get; set; }
         public string? FullName { get; set; }
         public required string Email { get; set; }
         public string PasswordHash { get; set; }
