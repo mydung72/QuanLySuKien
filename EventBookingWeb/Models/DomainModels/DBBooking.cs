@@ -7,7 +7,7 @@ namespace EventBookingWeb.Models.DomainModels
     {
         public required int BookingId { get; set; }
         public required int EventId { get; set; }
-        public required string UserId { get; set; }
+        public required int UserId { get; set; }
         public required int Quantity { get; set; }
         public required decimal TotalAmount { get; set; }
         public required PaymentStatus PaymentStatus { get; set; }
