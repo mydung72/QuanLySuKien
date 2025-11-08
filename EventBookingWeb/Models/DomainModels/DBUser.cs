@@ -1,6 +1,4 @@
 ﻿using EventBookingWeb.Models.Enums;
-using Microsoft.AspNetCore.Identity;
-
 
 namespace EventBookingWeb.Models.DomainModels
 {
