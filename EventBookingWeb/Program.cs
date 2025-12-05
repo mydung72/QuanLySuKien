@@ -45,7 +45,7 @@ using (var scope = app.Services.CreateScope())
         {
             FullName = "Administrator",
             Email = "admin@gmail.com",
-            PasswordHash = "123456", // ?? B?n c� th? m� ho� sau
+            PasswordHash = "$2a$12$Qdqkoks2NCM9kPo4gxTEBeEU3mTS5BahZOSmG2d9ddhDaLVWHo7c2", // ?? B?n c� th? m� ho� sau
             Role = UserRole.Admin,
             UserStatus = UserStatus.Active,
             CreatedAt = DateTime.Now
