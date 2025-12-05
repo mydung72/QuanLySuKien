@@ -150,7 +150,15 @@ namespace EventBookingWeb.Controllers.Admin
         public async Task<IActionResult> CreateNews()
         {
             ViewBag.Events = await _context.Events.ToListAsync();
-            return View(new DBNews { NewsId = 0, IsVisible = true });
+            return View(new DBNews 
+            { 
+                NewsId = 0, 
+                EventId = 0,
+                Title = "", 
+                NewsContentHtml = "", 
+                ImageUrl = "",
+                IsVisible = true 
+            });
         }
 
         [HttpPost]

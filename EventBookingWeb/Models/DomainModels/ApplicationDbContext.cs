@@ -92,6 +92,12 @@ namespace EventBookingWeb.Models.DomainModels
                 .HasForeignKey(t => t.BookingID)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<DBBooking>()
+                .HasOne(b => b.Event)
+                .WithMany()
+                .HasForeignKey(b => b.EventId)
+                .OnDelete(DeleteBehavior.NoAction);
+
             modelBuilder.Entity<DBEvent>()
                 .HasMany(e => e.CategoryEvents)
                 .WithMany(c => c.Events)

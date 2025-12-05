@@ -13,10 +13,10 @@
                 <label>Lọc theo trạng thái</label>
                 <select name="status" class="form-control">
                     <option value="">Tất cả</option>
-                    <option value="0" @(Model.FilterStatus == EventBookingWeb.Models.Enums.PaymentStatus.Pending ? "selected" : "")>Chờ thanh toán</option>
-                    <option value="1" @(Model.FilterStatus == EventBookingWeb.Models.Enums.PaymentStatus.Reserved ? "selected" : "")>Đã đặt chỗ</option>
-                    <option value="2" @(Model.FilterStatus == EventBookingWeb.Models.Enums.PaymentStatus.Paid ? "selected" : "")>Đã thanh toán</option>
-                    <option value="3" @(Model.FilterStatus == EventBookingWeb.Models.Enums.PaymentStatus.Cancelled ? "selected" : "")>Đã hủy</option>
+                    <option value="0" selected="@(Model.FilterStatus == EventBookingWeb.Models.Enums.PaymentStatus.Pending)">Chờ thanh toán</option>
+                    <option value="1" selected="@(Model.FilterStatus == EventBookingWeb.Models.Enums.PaymentStatus.Reserved)">Đã đặt chỗ</option>
+                    <option value="2" selected="@(Model.FilterStatus == EventBookingWeb.Models.Enums.PaymentStatus.Paid)">Đã thanh toán</option>
+                    <option value="3" selected="@(Model.FilterStatus == EventBookingWeb.Models.Enums.PaymentStatus.Cancelled)">Đã hủy</option>
                 </select>
             </div>
             <div class="col-md-2">

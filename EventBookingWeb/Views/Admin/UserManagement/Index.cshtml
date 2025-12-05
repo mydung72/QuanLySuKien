@@ -18,16 +18,16 @@
                     <label>Vai trò</label>
                     <select name="filterRole" class="form-control">
                         <option value="">Tất cả</option>
-                        <option value="0" @(Model.FilterRole == EventBookingWeb.Models.Enums.UserRole.User ? "selected" : "")>User</option>
-                        <option value="1" @(Model.FilterRole == EventBookingWeb.Models.Enums.UserRole.Admin ? "selected" : "")>Admin</option>
+                        <option value="0" selected="@(Model.FilterRole == EventBookingWeb.Models.Enums.UserRole.User)">User</option>
+                        <option value="1" selected="@(Model.FilterRole == EventBookingWeb.Models.Enums.UserRole.Admin)">Admin</option>
                     </select>
                 </div>
                 <div class="col-md-3">
                     <label>Trạng thái</label>
                     <select name="filterStatus" class="form-control">
                         <option value="">Tất cả</option>
-                        <option value="0" @(Model.FilterStatus == EventBookingWeb.Models.Enums.UserStatus.Active ? "selected" : "")>Active</option>
-                        <option value="1" @(Model.FilterStatus == EventBookingWeb.Models.Enums.UserStatus.Locked ? "selected" : "")>Locked</option>
+                        <option value="0" selected="@(Model.FilterStatus == EventBookingWeb.Models.Enums.UserStatus.Active)">Active</option>
+                        <option value="1" selected="@(Model.FilterStatus == EventBookingWeb.Models.Enums.UserStatus.Locked)">Locked</option>
                     </select>
                 </div>
                 <div class="col-md-4">
