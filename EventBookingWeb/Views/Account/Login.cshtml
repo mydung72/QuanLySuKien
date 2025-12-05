@@ -1,33 +1,54 @@
-﻿@{
+﻿@model EventBookingWeb.ViewModels.Account.LoginViewModel
+@{
     ViewData["Title"] = "Đăng nhập";
 }
+
+<link rel="stylesheet" href="~/css/account.css" />
 
 <div class="account-container">
     <div class="account-card">
         <h2>Đăng nhập</h2>
 
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+
         <form asp-action="Login" method="post">
+            @Html.AntiForgeryToken()
+            
             <div class="form-group">
-                <label>Tên đăng nhập</label>
-                <input type="text" name="username" class="form-control" placeholder="Nhập tên đăng nhập" required />
+                <label asp-for="Email">Email</label>
+                <input asp-for="Email" class="form-control" placeholder="Nhập email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label>Mật khẩu</label>
-                <input type="password" name="password" class="form-control" placeholder="Nhập mật khẩu" required />
+                <label asp-for="Password">Mật khẩu</label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="Nhập mật khẩu" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-check mb-3">
+                <input asp-for="RememberMe" class="form-check-input" type="checkbox" />
+                <label asp-for="RememberMe" class="form-check-label">Ghi nhớ đăng nhập</label>
             </div>
 
             <button type="submit" class="btn-submit">Đăng nhập</button>
 
+            <div asp-validation-summary="ModelOnly" class="text-danger mt-3"></div>
+
+            <p class="text-note">
+                <a asp-action="ForgotPassword">Quên mật khẩu?</a>
+            </p>
             <p class="text-note">
                 Chưa có tài khoản?
                 <a asp-action="Register">Đăng ký ngay</a>
             </p>
-
-            @if (ViewBag.Error != null)
-            {
-                <p class="error">@ViewBag.Error</p>
-            }
         </form>
     </div>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
