@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/EventBookingWeb.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/account.css" />
+    <link rel="stylesheet" href="~/css/account.css"/>
 </head>
 <body>
     <header>
@@ -27,6 +27,10 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
+                    <div class="d-flex">
+                        <a asp-area="" asp-controller="Account" asp-action="Login" class="btn btn-outline-primary me-2">Đăng nhập</a>
+                        <a asp-area="" asp-controller="Account" asp-action="Register" class="btn btn-primary">Đăng ký</a>
+                    </div>
                 </div>
             </div>
         </nav>

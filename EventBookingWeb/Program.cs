@@ -1,4 +1,5 @@
 using EventBookingWeb.Models.DomainModels;
+using EventBookingWeb.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,24 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     dbContext.Database.Migrate(); // T? ??ng c?p nh?t DB theo migrate m?i nh?t
+
+    // Ki?m tra xem ?ã có tài kho?n admin ch?a
+    if (!dbContext.Users.Any(u => u.Role == UserRole.Admin))
+    {
+        var adminUser = new DBUser
+        {
+            FullName = "Administrator",
+            Email = "admin@gmail.com",
+            PasswordHash = "123456", // ?? B?n có th? mã hoá sau
+            Role = UserRole.Admin,
+            UserStatus = UserStatus.Active,
+            CreatedAt = DateTime.Now
+        };
+
+        dbContext.Users.Add(adminUser);
+        dbContext.SaveChanges();
+        Console.WriteLine("? ?ã t?o tài kho?n admin m?c ??nh: admin@gmail.com / 123456");
+    }
 }
 
 /// C?u hình middleware pipeline

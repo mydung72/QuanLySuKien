@@ -23,6 +23,7 @@ namespace EventBookingWeb.Models.DomainModels
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<DBUser>().HasKey(u => u.UserId); // Khóa chính
+            modelBuilder.Entity<DBUser>().Property(u => u.UserId).ValueGeneratedOnAdd();
             modelBuilder.Entity<DBUser>().Property(u => u.Role).IsRequired();
             modelBuilder.Entity<DBUser>().Property(u => u.Email).IsRequired();
             modelBuilder.Entity<DBUser>().HasIndex(u => u.Email).IsUnique();

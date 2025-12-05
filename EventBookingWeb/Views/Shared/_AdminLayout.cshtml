@@ -1,0 +1,53 @@
+﻿@*
+    Layout tổng cho phần Admin
+    File này sẽ dùng cho toàn bộ các trang trong thư mục Views/Admin/
+*@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin Dashboard</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/admin.css" />
+</head>
+<body>
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="profile">
+                <img src="~/lib/avatar.png" alt="Admin" />
+                <h4>admin</h4>
+            </div>
+
+            <ul class="menu">
+                <li><a asp-controller="Admin" asp-action="Dashboard"><i class="fa fa-home"></i> Trang chủ</a></li>
+                <li><a asp-controller="Admin" asp-action="Reports"><i class="fa fa-chart-line"></i> Thống kê</a></li>
+                <li><a asp-controller="Admin" asp-action="Events"><i class="fa fa-calendar"></i> Quản lý sự kiện</a></li>
+                <li><a asp-controller="Admin" asp-action="Bookings"><i class="fa fa-ticket"></i> Quản lý đặt chỗ</a></li>
+                <li><a asp-controller="Admin" asp-action="Users"><i class="fa fa-users"></i> Quản lý người dùng</a></li>
+                <li><a asp-controller="Admin" asp-action="MediaActivities"><i class="fa fa-bullhorn"></i> Hoạt động truyền thông</a></li>
+                <li><a asp-controller="Account" asp-action="Logout"><i class="fa fa-sign-out-alt"></i> Đăng xuất</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main content -->
+        <main class="main-content">
+            <header class="admin-header">
+                <h2>Hệ thống quản lý</h2>
+                @* <div class="search-box">
+                    <input type="text" placeholder="Tìm kiếm..." />
+                    <button><i class="fa fa-search"></i></button>
+                </div> *@
+            </header>
+
+            <section class="content">
+                @RenderBody()
+            </section>
+        </main>
+    </div>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
