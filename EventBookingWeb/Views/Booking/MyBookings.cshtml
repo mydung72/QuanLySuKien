@@ -11,12 +11,27 @@
         <form method="get" asp-action="MyBookings" class="row g-3">
             <div class="col-md-4">
                 <label>Lọc theo trạng thái</label>
+                @{
+                    var statusValues = new[] {
+                        new { Value = "", Text = "Tất cả", Status = (EventBookingWeb.Models.Enums.PaymentStatus?)null },
+                        new { Value = "0", Text = "Chờ thanh toán", Status = (EventBookingWeb.Models.Enums.PaymentStatus?)EventBookingWeb.Models.Enums.PaymentStatus.Pending },
+                        new { Value = "1", Text = "Đã đặt chỗ", Status = (EventBookingWeb.Models.Enums.PaymentStatus?)EventBookingWeb.Models.Enums.PaymentStatus.Reserved },
+                        new { Value = "2", Text = "Đã thanh toán", Status = (EventBookingWeb.Models.Enums.PaymentStatus?)EventBookingWeb.Models.Enums.PaymentStatus.Paid },
+                        new { Value = "3", Text = "Đã hủy", Status = (EventBookingWeb.Models.Enums.PaymentStatus?)EventBookingWeb.Models.Enums.PaymentStatus.Cancelled }
+                    };
+                }
                 <select name="status" class="form-control">
-                    <option value="">Tất cả</option>
-                    <option value="0" selected="@(Model.FilterStatus == EventBookingWeb.Models.Enums.PaymentStatus.Pending)">Chờ thanh toán</option>
-                    <option value="1" selected="@(Model.FilterStatus == EventBookingWeb.Models.Enums.PaymentStatus.Reserved)">Đã đặt chỗ</option>
-                    <option value="2" selected="@(Model.FilterStatus == EventBookingWeb.Models.Enums.PaymentStatus.Paid)">Đã thanh toán</option>
-                    <option value="3" selected="@(Model.FilterStatus == EventBookingWeb.Models.Enums.PaymentStatus.Cancelled)">Đã hủy</option>
+                    @foreach (var item in statusValues)
+                    {
+                        if (Model.FilterStatus == item.Status)
+                        {
+                            <option value="@item.Value" selected>@item.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
                 </select>
             </div>
             <div class="col-md-2">

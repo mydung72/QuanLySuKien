@@ -1,0 +1,154 @@
+@using EventBookingWeb.Models.Enums
+@model EventBookingWeb.ViewModels.Event.EventCreateViewModel
+@{
+    ViewData["Title"] = "Thêm sự kiện mới";
+    Layout = "_AdminLayout";
+    var categories = ViewBag.Categories as List<EventBookingWeb.Models.DomainModels.DBCategoryEvent> ?? new List<EventBookingWeb.Models.DomainModels.DBCategoryEvent>();
+}
+
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Sự kiện</a></li>
+            <li class="breadcrumb-item active">Thêm mới</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Thông tin sự kiện</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Tên sự kiện <span class="text-danger">*</span></label>
+                        <input asp-for="Title" class="form-control" placeholder="Nhập tên sự kiện" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mô tả ngắn</label>
+                        <textarea asp-for="EventDescription" class="form-control" rows="3" placeholder="Mô tả ngắn gọn về sự kiện"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Nội dung chi tiết <span class="text-danger">*</span></label>
+                        <textarea asp-for="EventContentHtml" class="form-control" rows="6" placeholder="Nội dung chi tiết về sự kiện (hỗ trợ HTML)"></textarea>
+                        <span asp-validation-for="EventContentHtml" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Địa điểm <span class="text-danger">*</span></label>
+                            <input asp-for="Location" class="form-control" placeholder="Địa điểm tổ chức" />
+                            <span asp-validation-for="Location" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Danh mục</label>
+                            <select asp-for="SelectedCategoryIds" class="form-select" multiple>
+                                @foreach (var cat in categories)
+                                {
+                                    <option value="@cat.CategoryEventId">@cat.CategoryEventName</option>
+                                }
+                            </select>
+                            <small class="text-muted">Giữ Ctrl để chọn nhiều danh mục</small>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Ngày bắt đầu <span class="text-danger">*</span></label>
+                            <input asp-for="StartDate" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Ngày kết thúc <span class="text-danger">*</span></label>
+                            <input asp-for="EndDate" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Tổng số chỗ <span class="text-danger">*</span></label>
+                            <input asp-for="TotalSeats" type="number" class="form-control" min="1" />
+                            <span asp-validation-for="TotalSeats" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Giá vé (VNĐ) <span class="text-danger">*</span></label>
+                            <input asp-for="TicketPrice" type="number" class="form-control" min="0" step="1000" />
+                            <span asp-validation-for="TicketPrice" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Trạng thái</label>
+                            <select asp-for="EventStatus" class="form-select">
+                                <option value="@EventStatus.Upcoming">Sắp diễn ra</option>
+                                <option value="@EventStatus.Ongoing">Đang diễn ra</option>
+                                <option value="@EventStatus.Ended">Đã kết thúc</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Hình ảnh poster <span class="text-danger">*</span></label>
+                        <input asp-for="PosterImage" type="file" class="form-control" accept="image/*" onchange="previewImage(this)" />
+                        <small class="text-muted">Chấp nhận: JPG, PNG, GIF. Tối đa 5MB</small>
+                    </div>
+
+                    <div id="imagePreview" class="mb-3" style="display: none;">
+                        <img id="preview" src="" alt="Preview" class="img-thumbnail" style="max-height: 200px;">
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Quay lại
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-2"></i>Tạo sự kiện
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-lightbulb me-2"></i>Hướng dẫn</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Tên sự kiện nên ngắn gọn, súc tích</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Địa điểm cần ghi rõ ràng, đầy đủ</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Hình ảnh poster nên có tỷ lệ 16:9</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Nội dung chi tiết có thể sử dụng HTML</li>
+                    <li><i class="bi bi-check-circle text-success me-2"></i>Kiểm tra lại thông tin trước khi lưu</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+}
+

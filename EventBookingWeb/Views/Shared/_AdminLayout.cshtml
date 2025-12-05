@@ -9,45 +9,353 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Admin Dashboard</title>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/admin.css" />
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --sidebar-bg: #1a1d29;
+            --sidebar-hover: #2d3142;
+            --primary-color: #4f46e5;
+            --accent-color: #06b6d4;
+        }
+        
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+
+        .admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            color: white;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            text-align: center;
+        }
+
+        .sidebar-header .profile-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.3);
+            margin-bottom: 0.75rem;
+            object-fit: cover;
+        }
+
+        .sidebar-header h4 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-header small {
+            opacity: 0.8;
+            font-size: 0.85rem;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 1rem 0;
+            margin: 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu li {
+            margin: 0.25rem 0.75rem;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            padding: 0.85rem 1rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a i {
+            width: 24px;
+            margin-right: 12px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .sidebar-menu a:hover {
+            background: var(--sidebar-hover);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu a.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+        }
+
+        .menu-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            margin: 1rem 1.5rem;
+        }
+
+        .menu-label {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0.5rem 1.75rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Main content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .admin-header {
+            background: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .admin-header h2 {
+            color: #1a1d29;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .card-header {
+            background: transparent;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+        }
+
+        .stat-card {
+            padding: 1.5rem;
+            border-radius: 15px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .stat-card h5 {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .stat-card i {
+            font-size: 2.5rem;
+            opacity: 0.3;
+            position: absolute;
+            right: 1rem;
+            bottom: 1rem;
+        }
+
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        }
+
+        .bg-gradient-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .bg-gradient-info {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+        }
+
+        .bg-gradient-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        /* Tables */
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th {
+            font-weight: 600;
+            color: #475569;
+            border-top: none;
+            background: #f8fafc;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        /* Buttons */
+        .btn {
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-sm {
+            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        /* Badges */
+        .badge {
+            padding: 0.5em 0.75em;
+            font-weight: 500;
+            border-radius: 6px;
+        }
+
+        /* Forms */
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            padding: 0.6rem 1rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        /* Alerts */
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+    </style>
 </head>
 <body>
     <div class="admin-wrapper">
         <!-- Sidebar -->
         <aside class="sidebar">
-            <div class="profile">
-                <img src="~/lib/avatar.png" alt="Admin" />
-                <h4>admin</h4>
+            <div class="sidebar-header">
+                <img src="/lib/avatar.png" alt="Admin" class="profile-img" onerror="this.src='https://ui-avatars.com/api/?name=Admin&background=random'">
+                <h4>Administrator</h4>
+                <small>Quản trị viên</small>
             </div>
 
-            <ul class="menu">
-                <li><a asp-controller="Admin" asp-action="Dashboard"><i class="fa fa-home"></i> Trang chủ</a></li>
-                <li><a asp-controller="Admin" asp-action="Reports"><i class="fa fa-chart-line"></i> Thống kê</a></li>
-                <li><a asp-controller="Admin" asp-action="Events"><i class="fa fa-calendar"></i> Quản lý sự kiện</a></li>
-                <li><a asp-controller="Admin" asp-action="Bookings"><i class="fa fa-ticket"></i> Quản lý đặt chỗ</a></li>
-                <li><a asp-controller="Admin" asp-action="Users"><i class="fa fa-users"></i> Quản lý người dùng</a></li>
-                <li><a asp-controller="Admin" asp-action="MediaActivities"><i class="fa fa-bullhorn"></i> Hoạt động truyền thông</a></li>
-                <li><a asp-controller="Account" asp-action="Logout"><i class="fa fa-sign-out-alt"></i> Đăng xuất</a></li>
+            <ul class="sidebar-menu">
+                <li><a asp-controller="Admin" asp-action="Dashboard" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Dashboard" ? "active" : "")"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                
+                <div class="menu-label">Quản lý</div>
+                <li><a asp-controller="EventManagement" asp-action="Index" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "EventManagement" ? "active" : "")"><i class="bi bi-calendar-event"></i> Sự kiện</a></li>
+                <li><a asp-controller="BookingManagement" asp-action="Index" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "BookingManagement" ? "active" : "")"><i class="bi bi-ticket-perforated"></i> Đặt chỗ</a></li>
+                <li><a asp-controller="UserManagement" asp-action="Index" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "UserManagement" ? "active" : "")"><i class="bi bi-people"></i> Người dùng</a></li>
+                <li><a asp-controller="CategoryManagement" asp-action="Index" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "CategoryManagement" ? "active" : "")"><i class="bi bi-tags"></i> Danh mục</a></li>
+
+                <div class="menu-label">Truyền thông</div>
+                <li><a asp-controller="Media" asp-action="News" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Media" && ViewContext.RouteData.Values["action"]?.ToString()?.Contains("News") == true ? "active" : "")"><i class="bi bi-newspaper"></i> Tin tức</a></li>
+                <li><a asp-controller="Media" asp-action="Banners" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Media" && ViewContext.RouteData.Values["action"]?.ToString()?.Contains("Banner") == true ? "active" : "")"><i class="bi bi-image"></i> Banner</a></li>
+
+                <div class="menu-label">Báo cáo</div>
+                <li><a asp-controller="Report" asp-action="Revenue" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Report" && ViewContext.RouteData.Values["action"]?.ToString() == "Revenue" ? "active" : "")"><i class="bi bi-graph-up"></i> Doanh thu</a></li>
+                <li><a asp-controller="Report" asp-action="Attendance" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Report" && ViewContext.RouteData.Values["action"]?.ToString() == "Attendance" ? "active" : "")"><i class="bi bi-person-check"></i> Tham dự</a></li>
+                <li><a asp-controller="Report" asp-action="PopularEvents" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Report" && ViewContext.RouteData.Values["action"]?.ToString() == "PopularEvents" ? "active" : "")"><i class="bi bi-fire"></i> Sự kiện hot</a></li>
+
+                <div class="menu-divider"></div>
+                <li><a asp-controller="Account" asp-action="Logout"><i class="bi bi-box-arrow-left"></i> Đăng xuất</a></li>
             </ul>
         </aside>
 
         <!-- Main content -->
         <main class="main-content">
             <header class="admin-header">
-                <h2>Hệ thống quản lý</h2>
-                @* <div class="search-box">
-                    <input type="text" placeholder="Tìm kiếm..." />
-                    <button><i class="fa fa-search"></i></button>
-                </div> *@
+                <h2>@ViewData["Title"]</h2>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="text-muted small">@DateTime.Now.ToString("dddd, dd/MM/yyyy")</span>
+                </div>
             </header>
 
             <section class="content">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-circle me-2"></i>@TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
                 @RenderBody()
             </section>
         </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

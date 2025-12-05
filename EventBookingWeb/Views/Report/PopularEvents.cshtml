@@ -1,0 +1,182 @@
+@model EventBookingWeb.ViewModels.Admin.ReportViewModel
+@{
+    ViewData["Title"] = "Sự kiện phổ biến";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1">Sự kiện phổ biến</h4>
+        <p class="text-muted mb-0">Top 10 sự kiện được đặt chỗ nhiều nhất</p>
+    </div>
+</div>
+
+@if (Model.PopularEvents != null && Model.PopularEvents.Any())
+{
+    <!-- Top 3 Cards -->
+    <div class="row mb-4">
+        @{
+            var top3 = Model.PopularEvents.Take(3).ToList();
+            var medals = new[] { "🥇", "🥈", "🥉" };
+            var gradients = new[] { "linear-gradient(135deg, #ffd700, #ffb700)", "linear-gradient(135deg, #c0c0c0, #a8a8a8)", "linear-gradient(135deg, #cd7f32, #b87333)" };
+        }
+        @for (int i = 0; i < top3.Count; i++)
+        {
+            var eventItem = top3[i];
+            <div class="col-md-4">
+                <div class="card h-100" style="border-top: 4px solid @(i == 0 ? "#ffd700" : i == 1 ? "#c0c0c0" : "#cd7f32");">
+                    <div class="position-relative">
+                        <img src="@eventItem.EventImageUrl" alt="@eventItem.EventTitle" class="card-img-top" style="height: 150px; object-fit: cover;">
+                        <div class="position-absolute top-0 start-0 m-2">
+                            <span class="fs-3">@medals[i]</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title text-truncate" title="@eventItem.EventTitle">@eventItem.EventTitle</h5>
+                        <div class="d-flex justify-content-between mt-3">
+                            <div class="text-center">
+                                <div class="text-muted small">Đặt chỗ</div>
+                                <div class="fw-bold text-primary">@eventItem.BookingCount</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-muted small">Tham dự</div>
+                                <div class="fw-bold text-success">@eventItem.TotalAttendees</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-muted small">Doanh thu</div>
+                                <div class="fw-bold text-info">@(eventItem.TotalRevenue / 1000000)M</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Chart -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-bar-chart me-2"></i>Biểu đồ số lượng đặt chỗ</h5>
+        </div>
+        <div class="card-body">
+            <canvas id="popularChart" height="80"></canvas>
+        </div>
+    </div>
+
+    <!-- Full Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-trophy me-2"></i>Bảng xếp hạng chi tiết</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">#</th>
+                            <th>Sự kiện</th>
+                            <th class="text-center">Số đặt chỗ</th>
+                            <th class="text-center">Người tham dự</th>
+                            <th class="text-end">Doanh thu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int rank = 1;
+                        }
+                        @foreach (var eventItem in Model.PopularEvents)
+                        {
+                            <tr>
+                                <td>
+                                    @if (rank <= 3)
+                                    {
+                                        <span class="fs-5">@medals[rank - 1]</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@rank</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="@eventItem.EventImageUrl" alt="" class="rounded me-2" style="width: 40px; height: 30px; object-fit: cover;">
+                                        <span>@eventItem.EventTitle</span>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-primary">@eventItem.BookingCount</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-success">@eventItem.TotalAttendees người</span>
+                                </td>
+                                <td class="text-end">
+                                    <strong class="text-info">@eventItem.TotalRevenue.ToString("N0") đ</strong>
+                                </td>
+                            </tr>
+                            rank++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-trophy display-1 text-muted"></i>
+            <h5 class="mt-3 text-muted">Chưa có dữ liệu</h5>
+            <p class="text-muted">Các sự kiện sẽ được xếp hạng khi có đặt chỗ</p>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    @if (Model.PopularEvents != null && Model.PopularEvents.Any())
+    {
+        <script>
+            var ctx = document.getElementById('popularChart').getContext('2d');
+            var popularChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [@Html.Raw(string.Join(",", Model.PopularEvents.Select(e => $"'{(e.EventTitle.Length > 15 ? e.EventTitle.Substring(0, 15) + "..." : e.EventTitle)}'")))],
+                    datasets: [{
+                        label: 'Số đặt chỗ',
+                        data: [@string.Join(",", Model.PopularEvents.Select(e => e.BookingCount))],
+                        backgroundColor: [
+                            'rgba(255, 215, 0, 0.8)',
+                            'rgba(192, 192, 192, 0.8)',
+                            'rgba(205, 127, 50, 0.8)',
+                            'rgba(79, 70, 229, 0.8)',
+                            'rgba(6, 182, 212, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(139, 92, 246, 0.8)',
+                            'rgba(236, 72, 153, 0.8)'
+                        ],
+                        borderWidth: 0,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        </script>
+    }
+}
+

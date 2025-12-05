@@ -1,0 +1,152 @@
+@model EventBookingWeb.ViewModels.Admin.ReportViewModel
+@{
+    ViewData["Title"] = "Báo cáo tham dự";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1">Báo cáo tham dự</h4>
+        <p class="text-muted mb-0">Thống kê số người tham dự theo sự kiện</p>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card stat-card bg-gradient-primary">
+            <h5><i class="bi bi-calendar-event me-2"></i>Tổng sự kiện</h5>
+            <h2>@(Model.EventAttendance?.Count ?? 0)</h2>
+            <i class="bi bi-calendar3"></i>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card bg-gradient-success">
+            <h5><i class="bi bi-people me-2"></i>Tổng người tham dự</h5>
+            <h2>@(Model.EventAttendance?.Sum(e => e.TotalAttendees) ?? 0)</h2>
+            <i class="bi bi-person-check"></i>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card bg-gradient-info">
+            <h5><i class="bi bi-currency-dollar me-2"></i>Tổng doanh thu</h5>
+            <h2>@((Model.EventAttendance?.Sum(e => e.TotalRevenue) ?? 0).ToString("N0")) đ</h2>
+            <i class="bi bi-graph-up"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Attendance Chart -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-pie-chart me-2"></i>Biểu đồ tham dự theo sự kiện</h5>
+    </div>
+    <div class="card-body">
+        @if (Model.EventAttendance != null && Model.EventAttendance.Any())
+        {
+            <canvas id="attendanceChart" height="100"></canvas>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-graph-down display-1 text-muted"></i>
+                <p class="text-muted mt-3">Chưa có dữ liệu tham dự</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Attendance Table -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-table me-2"></i>Chi tiết tham dự theo sự kiện</h5>
+    </div>
+    <div class="card-body">
+        @if (Model.EventAttendance != null && Model.EventAttendance.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Sự kiện</th>
+                            <th class="text-center">Số đặt chỗ</th>
+                            <th class="text-center">Số người tham dự</th>
+                            <th class="text-end">Doanh thu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.EventAttendance)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@item.EventTitle</strong>
+                                </td>
+                                <td class="text-center">@item.TotalBookings</td>
+                                <td class="text-center">
+                                    <span class="badge bg-success">@item.TotalAttendees người</span>
+                                </td>
+                                <td class="text-end"><strong class="text-primary">@item.TotalRevenue.ToString("N0") đ</strong></td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-light">
+                            <td><strong>Tổng cộng</strong></td>
+                            <td class="text-center"><strong>@Model.EventAttendance.Sum(e => e.TotalBookings)</strong></td>
+                            <td class="text-center"><strong>@Model.EventAttendance.Sum(e => e.TotalAttendees) người</strong></td>
+                            <td class="text-end"><strong class="text-primary">@Model.EventAttendance.Sum(e => e.TotalRevenue).ToString("N0") đ</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-4">
+                <p class="text-muted mb-0">Không có dữ liệu</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    @if (Model.EventAttendance != null && Model.EventAttendance.Any())
+    {
+        <script>
+            var ctx = document.getElementById('attendanceChart').getContext('2d');
+            var colors = [
+                'rgba(79, 70, 229, 0.8)',
+                'rgba(6, 182, 212, 0.8)',
+                'rgba(16, 185, 129, 0.8)',
+                'rgba(245, 158, 11, 0.8)',
+                'rgba(239, 68, 68, 0.8)',
+                'rgba(139, 92, 246, 0.8)',
+                'rgba(236, 72, 153, 0.8)',
+                'rgba(59, 130, 246, 0.8)'
+            ];
+            
+            var attendanceChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [@Html.Raw(string.Join(",", Model.EventAttendance.Take(8).Select(e => $"'{(e.EventTitle.Length > 20 ? e.EventTitle.Substring(0, 20) + "..." : e.EventTitle)}'")))],
+                    datasets: [{
+                        data: [@string.Join(",", Model.EventAttendance.Take(8).Select(e => e.TotalAttendees))],
+                        backgroundColor: colors.slice(0, @Math.Min(Model.EventAttendance.Count, 8)),
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+        </script>
+    }
+}
+

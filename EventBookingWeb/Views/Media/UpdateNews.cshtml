@@ -1,0 +1,130 @@
+@model EventBookingWeb.Models.DomainModels.DBNews
+@{
+    ViewData["Title"] = "Chỉnh sửa tin tức";
+    Layout = "_AdminLayout";
+    var events = ViewBag.Events as List<EventBookingWeb.Models.DomainModels.DBEvent> ?? new List<EventBookingWeb.Models.DomainModels.DBEvent>();
+}
+
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="News">Tin tức</a></li>
+            <li class="breadcrumb-item active">Chỉnh sửa</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Chỉnh sửa tin tức</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="UpdateNews" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="NewsId" />
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Tiêu đề <span class="text-danger">*</span></label>
+                        <input asp-for="Title" class="form-control" placeholder="Nhập tiêu đề bài viết" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Sự kiện liên quan</label>
+                        <select asp-for="EventId" class="form-select">
+                            <option value="0">-- Không liên kết sự kiện --</option>
+                            @foreach (var e in events)
+                            {
+                                if (Model.EventId == e.EventId)
+                                {
+                                    <option value="@e.EventId" selected>@e.Title</option>
+                                }
+                                else
+                                {
+                                    <option value="@e.EventId">@e.Title</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Nội dung <span class="text-danger">*</span></label>
+                        <textarea asp-for="NewsContentHtml" class="form-control" rows="10" placeholder="Nội dung bài viết (hỗ trợ HTML)"></textarea>
+                        <span asp-validation-for="NewsContentHtml" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Hình ảnh mới</label>
+                        <input type="file" name="imageFile" class="form-control" accept="image/*" onchange="previewImage(this)" />
+                        <small class="text-muted">Để trống nếu không muốn thay đổi hình ảnh</small>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="mb-3">
+                            <label class="form-label">Hình ảnh hiện tại:</label>
+                            <div>
+                                <img src="@Model.ImageUrl" alt="Current Image" class="img-thumbnail" style="max-height: 150px;">
+                            </div>
+                        </div>
+                    }
+
+                    <div id="imagePreview" class="mb-3" style="display: none;">
+                        <label class="form-label">Hình ảnh mới:</label>
+                        <div>
+                            <img id="preview" src="" alt="Preview" class="img-thumbnail" style="max-height: 150px;">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input asp-for="IsVisible" class="form-check-input" type="checkbox">
+                            <label class="form-check-label" asp-for="IsVisible">Hiển thị bài viết</label>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="News" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Quay lại
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-2"></i>Lưu thay đổi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>Thông tin</h6>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-2"><strong>ID:</strong> @Model.NewsId</p>
+                <p class="text-muted mb-0"><strong>Ngày tạo:</strong> @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+}
+

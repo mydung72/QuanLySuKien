@@ -1,0 +1,214 @@
+@using EventBookingWeb.Models.Enums
+@model EventBookingWeb.Models.DomainModels.DBBooking
+@{
+    ViewData["Title"] = "Chi tiết đặt chỗ #" + Model.BookingId;
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Đặt chỗ</a></li>
+            <li class="breadcrumb-item active">Chi tiết #@Model.BookingId</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Booking Info -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-ticket-perforated me-2"></i>Thông tin đặt chỗ</h5>
+                @{
+                    var statusClass = Model.PaymentStatus switch
+                    {
+                        PaymentStatus.Pending => "bg-warning",
+                        PaymentStatus.Reserved => "bg-info",
+                        PaymentStatus.Paid => "bg-success",
+                        PaymentStatus.Cancelled => "bg-danger",
+                        PaymentStatus.Refunded => "bg-secondary",
+                        _ => "bg-secondary"
+                    };
+                    var statusText = Model.PaymentStatus switch
+                    {
+                        PaymentStatus.Pending => "Chờ thanh toán",
+                        PaymentStatus.Reserved => "Đã đặt chỗ",
+                        PaymentStatus.Paid => "Đã thanh toán",
+                        PaymentStatus.Cancelled => "Đã hủy",
+                        PaymentStatus.Refunded => "Đã hoàn tiền",
+                        _ => "Không xác định"
+                    };
+                }
+                <span class="badge @statusClass fs-6">@statusText</span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td class="text-muted" style="width: 140px;">Mã đặt chỗ:</td>
+                                <td><strong>#@Model.BookingId</strong></td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Ngày đặt:</td>
+                                <td>@Model.BookingDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Số lượng vé:</td>
+                                <td>@Model.Quantity vé</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td class="text-muted" style="width: 140px;">Phương thức TT:</td>
+                                <td><span class="badge bg-secondary">@Model.PaymentMethod</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Tổng tiền:</td>
+                                <td><strong class="text-primary fs-5">@Model.TotalAmount.ToString("N0") VNĐ</strong></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Event Info -->
+        @if (Model.Event != null)
+        {
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-calendar-event me-2"></i>Thông tin sự kiện</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex">
+                        <img src="@Model.Event.ImageUrl" alt="@Model.Event.Title" class="rounded me-3" style="width: 120px; height: 90px; object-fit: cover;">
+                        <div>
+                            <h5 class="mb-2">@Model.Event.Title</h5>
+                            <p class="mb-1"><i class="bi bi-geo-alt text-muted me-2"></i>@Model.Event.Location</p>
+                            <p class="mb-1"><i class="bi bi-calendar3 text-muted me-2"></i>@Model.Event.StartDate.ToString("dd/MM/yyyy HH:mm") - @Model.Event.EndDate.ToString("HH:mm")</p>
+                            <p class="mb-0"><i class="bi bi-cash text-muted me-2"></i>@Model.Event.TicketPrice.ToString("N0") VNĐ/vé</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Tickets -->
+        @if (Model.Tickets != null && Model.Tickets.Any())
+        {
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-qr-code me-2"></i>Danh sách vé (@Model.Tickets.Count vé)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Mã vé</th>
+                                    <th>QR Code Data</th>
+                                    <th>Ngày tạo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var ticket in Model.Tickets)
+                                {
+                                    <tr>
+                                        <td><strong class="font-monospace">@ticket.TicketCode</strong></td>
+                                        <td><code class="small">@ticket.QRCodeData</code></td>
+                                        <td>@ticket.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Customer Info -->
+        @if (Model.User != null)
+        {
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-person me-2"></i>Thông tin khách hàng</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                            @(Model.User.FullName?.Substring(0, 1).ToUpper() ?? "U")
+                        </div>
+                    </div>
+                    <h6 class="text-center mb-3">@Model.User.FullName</h6>
+                    <table class="table table-borderless table-sm">
+                        <tr>
+                            <td class="text-muted">Email:</td>
+                            <td>@Model.User.Email</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">SĐT:</td>
+                            <td>@(Model.User.Phone ?? "-")</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        }
+
+        <!-- Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-gear me-2"></i>Thao tác</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    @if (Model.PaymentStatus == PaymentStatus.Pending || Model.PaymentStatus == PaymentStatus.Reserved)
+                    {
+                        <form asp-action="Approve" asp-route-id="@Model.BookingId" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success w-100" onclick="return confirm('Xác nhận duyệt đặt chỗ này?');">
+                                <i class="bi bi-check-circle me-2"></i>Duyệt thanh toán
+                            </button>
+                        </form>
+                    }
+
+                    @if (Model.PaymentStatus != PaymentStatus.Cancelled && Model.PaymentStatus != PaymentStatus.Refunded)
+                    {
+                        <form asp-action="Cancel" asp-route-id="@Model.BookingId" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-outline-danger w-100" onclick="return confirm('Bạn có chắc muốn hủy đặt chỗ này?');">
+                                <i class="bi bi-x-circle me-2"></i>Hủy đặt chỗ
+                            </button>
+                        </form>
+                    }
+
+                    @if (Model.PaymentStatus == PaymentStatus.Paid)
+                    {
+                        <form asp-action="Refund" asp-route-id="@Model.BookingId" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-outline-warning w-100" onclick="return confirm('Bạn có chắc muốn hoàn tiền cho đặt chỗ này?');">
+                                <i class="bi bi-arrow-counterclockwise me-2"></i>Hoàn tiền
+                            </button>
+                        </form>
+                    }
+
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>Quay lại danh sách
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .font-monospace {
+        font-family: 'Courier New', monospace;
+    }
+</style>
+

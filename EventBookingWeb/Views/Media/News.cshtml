@@ -1,0 +1,94 @@
+@model IEnumerable<EventBookingWeb.Models.DomainModels.DBNews>
+@{
+    ViewData["Title"] = "Quản lý tin tức";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1">Quản lý tin tức</h4>
+        <p class="text-muted mb-0">Tạo và quản lý các bài viết tin tức</p>
+    </div>
+    <a asp-action="CreateNews" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-2"></i>Thêm tin tức
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 100px;">Hình ảnh</th>
+                            <th>Tiêu đề</th>
+                            <th>Sự kiện liên quan</th>
+                            <th>Ngày tạo</th>
+                            <th class="text-center">Hiển thị</th>
+                            <th class="text-center" style="width: 120px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var news in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <img src="@news.ImageUrl" alt="@news.Title" class="rounded" style="width: 80px; height: 60px; object-fit: cover;">
+                                </td>
+                                <td>
+                                    <strong>@news.Title</strong>
+                                </td>
+                                <td>
+                                    @if (news.Event != null)
+                                    {
+                                        <span class="badge bg-info">@news.Event.Title</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>@news.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="text-center">
+                                    @if (news.IsVisible)
+                                    {
+                                        <span class="badge bg-success"><i class="bi bi-eye"></i> Hiện</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary"><i class="bi bi-eye-slash"></i> Ẩn</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <a asp-action="UpdateNews" asp-route-id="@news.NewsId" class="btn btn-sm btn-outline-primary" title="Sửa">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form asp-action="DeleteNews" asp-route-id="@news.NewsId" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa tin tức này?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-newspaper display-1 text-muted"></i>
+                <h5 class="mt-3 text-muted">Chưa có tin tức nào</h5>
+                <p class="text-muted">Tạo bài viết đầu tiên của bạn</p>
+                <a asp-action="CreateNews" class="btn btn-primary mt-2">
+                    <i class="bi bi-plus-lg me-2"></i>Thêm tin tức
+                </a>
+            </div>
+        }
+    </div>
+</div>
+

@@ -1,0 +1,158 @@
+@using EventBookingWeb.Models.Enums
+@model IEnumerable<EventBookingWeb.Models.DomainModels.DBEvent>
+@{
+    ViewData["Title"] = "Quản lý sự kiện";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1">Danh sách sự kiện</h4>
+        <p class="text-muted mb-0">Quản lý tất cả sự kiện trong hệ thống</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-2"></i>Thêm sự kiện mới
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">Hình ảnh</th>
+                            <th>Tên sự kiện</th>
+                            <th>Danh mục</th>
+                            <th>Ngày diễn ra</th>
+                            <th>Giá vé</th>
+                            <th>Chỗ trống</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center" style="width: 180px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var e in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <img src="@e.ImageUrl" alt="@e.Title" class="rounded" style="width: 60px; height: 45px; object-fit: cover;">
+                                </td>
+                                <td>
+                                    <strong>@e.Title</strong>
+                                    <br>
+                                    <small class="text-muted"><i class="bi bi-geo-alt"></i> @e.Location</small>
+                                </td>
+                                <td>
+                                    @if (e.CategoryEvents != null && e.CategoryEvents.Any())
+                                    {
+                                        @foreach (var cat in e.CategoryEvents)
+                                        {
+                                            <span class="badge bg-secondary me-1">@cat.CategoryEventName</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    <i class="bi bi-calendar3 text-muted"></i> @e.StartDate.ToString("dd/MM/yyyy")
+                                    <br>
+                                    <small class="text-muted">@e.StartDate.ToString("HH:mm") - @e.EndDate.ToString("HH:mm")</small>
+                                </td>
+                                <td>
+                                    <strong class="text-primary">@e.TicketPrice.ToString("N0") đ</strong>
+                                </td>
+                                <td>
+                                    <span class="@(e.AvailableSeats <= 10 ? "text-danger" : "text-success")">
+                                        @e.AvailableSeats / @e.TotalSeats
+                                    </span>
+                                </td>
+                                <td>
+                                    @{
+                                        var statusClass = e.EventStatus switch
+                                        {
+                                            EventStatus.Upcoming => "bg-info",
+                                            EventStatus.Ongoing => "bg-success",
+                                            EventStatus.Ended => "bg-secondary",
+                                            EventStatus.Cancelled => "bg-danger",
+                                            _ => "bg-secondary"
+                                        };
+                                        var statusText = e.EventStatus switch
+                                        {
+                                            EventStatus.Upcoming => "Sắp diễn ra",
+                                            EventStatus.Ongoing => "Đang diễn ra",
+                                            EventStatus.Ended => "Đã kết thúc",
+                                            EventStatus.Cancelled => "Đã hủy",
+                                            _ => "Không xác định"
+                                        };
+                                    }
+                                    <span class="badge @statusClass">@statusText</span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Edit" asp-route-id="@e.EventId" class="btn btn-sm btn-outline-primary" title="Sửa">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#statusModal-@e.EventId" title="Đổi trạng thái">
+                                            <i class="bi bi-toggle-on"></i>
+                                        </button>
+                                        <form asp-action="Delete" asp-route-id="@e.EventId" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa sự kiện này?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Status Modal -->
+                            <div class="modal fade" id="statusModal-@e.EventId" tabindex="-1">
+                                <div class="modal-dialog modal-sm">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Cập nhật trạng thái</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <form asp-action="UpdateStatus" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@e.EventId" />
+                                            <div class="modal-body">
+                                                <select name="status" class="form-select">
+                                                    <option value="@EventStatus.Upcoming" selected="@(e.EventStatus == EventStatus.Upcoming)">Sắp diễn ra</option>
+                                                    <option value="@EventStatus.Ongoing" selected="@(e.EventStatus == EventStatus.Ongoing)">Đang diễn ra</option>
+                                                    <option value="@EventStatus.Ended" selected="@(e.EventStatus == EventStatus.Ended)">Đã kết thúc</option>
+                                                    <option value="@EventStatus.Cancelled" selected="@(e.EventStatus == EventStatus.Cancelled)">Đã hủy</option>
+                                                </select>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                <button type="submit" class="btn btn-primary">Lưu</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-calendar-x display-1 text-muted"></i>
+                <h5 class="mt-3 text-muted">Chưa có sự kiện nào</h5>
+                <p class="text-muted">Bắt đầu tạo sự kiện đầu tiên của bạn</p>
+                <a asp-action="Create" class="btn btn-primary mt-2">
+                    <i class="bi bi-plus-lg me-2"></i>Thêm sự kiện
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
