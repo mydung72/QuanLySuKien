@@ -56,18 +56,18 @@ namespace EventBookingWeb.Controllers.Admin
                     PageSize = pageSize
                 };
 
-                return View(viewModel);
+                return View("~/Views/Admin/UserManagement/Index.cshtml", viewModel);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error loading users: {ex.Message}");
-                return View(new UserManagementViewModel());
+                return View("~/Views/Admin/UserManagement/Index.cshtml", new UserManagementViewModel());
             }
         }
 
         public IActionResult Create()
         {
-            return View(new UserCreateViewModel());
+            return View("~/Views/Admin/UserManagement/Create.cshtml", new UserCreateViewModel());
         }
 
         [HttpPost]
@@ -77,12 +77,12 @@ namespace EventBookingWeb.Controllers.Admin
             try
             {
                 if (!ModelState.IsValid)
-                    return View(model);
+                    return View("~/Views/Admin/UserManagement/Create.cshtml", model);
 
                 if (await _context.Users.AnyAsync(u => u.Email == model.Email))
                 {
                     ModelState.AddModelError("Email", "Email đã được sử dụng");
-                    return View(model);
+                    return View("~/Views/Admin/UserManagement/Create.cshtml", model);
                 }
 
                 var user = new DBUser
@@ -107,7 +107,7 @@ namespace EventBookingWeb.Controllers.Admin
             {
                 _logger.LogError($"Error creating user: {ex.Message}");
                 ModelState.AddModelError("", "Có lỗi xảy ra. Vui lòng thử lại.");
-                return View(model);
+                return View("~/Views/Admin/UserManagement/Create.cshtml", model);
             }
         }
 
@@ -127,7 +127,7 @@ namespace EventBookingWeb.Controllers.Admin
                 UserStatus = user.UserStatus
             };
 
-            return View(viewModel);
+            return View("~/Views/Admin/UserManagement/Edit.cshtml", viewModel);
         }
 
         [HttpPost]
@@ -137,7 +137,7 @@ namespace EventBookingWeb.Controllers.Admin
             try
             {
                 if (!ModelState.IsValid)
-                    return View(model);
+                    return View("~/Views/Admin/UserManagement/Edit.cshtml", model);
 
                 var user = await _context.Users.FindAsync(model.UserId);
                 if (user == null)
@@ -146,7 +146,7 @@ namespace EventBookingWeb.Controllers.Admin
                 if (await _context.Users.AnyAsync(u => u.Email == model.Email && u.UserId != model.UserId))
                 {
                     ModelState.AddModelError("Email", "Email đã được sử dụng");
-                    return View(model);
+                    return View("~/Views/Admin/UserManagement/Edit.cshtml", model);
                 }
 
                 user.FullName = model.FullName;
@@ -169,7 +169,7 @@ namespace EventBookingWeb.Controllers.Admin
             {
                 _logger.LogError($"Error updating user: {ex.Message}");
                 ModelState.AddModelError("", "Có lỗi xảy ra. Vui lòng thử lại.");
-                return View(model);
+                return View("~/Views/Admin/UserManagement/Edit.cshtml", model);
             }
         }
 
