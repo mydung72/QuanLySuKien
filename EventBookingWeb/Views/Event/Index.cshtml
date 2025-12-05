@@ -18,7 +18,7 @@
                             @foreach (var category in ViewBag.Categories as List<EventBookingWeb.Models.DomainModels.DBCategoryEvent>)
                             {
                                 <option value="@category.CategoryEventId" 
-                                    @(Model.Filter.CategoryId == category.CategoryEventId ? "selected" : "")>
+                                    selected=@(Model.Filter.CategoryId == category.CategoryEventId ? "selected" : "")>
                                     @category.CategoryEventName
                                 </option>
                             }
