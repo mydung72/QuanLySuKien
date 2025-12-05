@@ -21,15 +21,70 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Event" asp-action="Index">Sự kiện</a>
                         </li>
                     </ul>
-                    <div class="d-flex">
-                        <a asp-area="" asp-controller="Account" asp-action="Login" class="btn btn-outline-primary me-2">Đăng nhập</a>
-                        <a asp-area="" asp-controller="Account" asp-action="Register" class="btn btn-primary">Đăng ký</a>
+                    <div class="d-flex align-items-center">
+                        @{
+                            var userId = Context.Session.GetString("UserId");
+                            var username = Context.Session.GetString("Username");
+                            var email = Context.Session.GetString("Email");
+                            var role = Context.Session.GetString("Role");
+                        }
+                        
+                        @if (string.IsNullOrEmpty(userId))
+                        {
+                            <a asp-area="" asp-controller="Account" asp-action="Login" class="btn btn-outline-primary me-2">Đăng nhập</a>
+                            <a asp-area="" asp-controller="Account" asp-action="Register" class="btn btn-primary">Đăng ký</a>
+                        }
+                        else
+                        {
+                            <!-- Giỏ hàng -->
+                            <a asp-controller="Cart" asp-action="Index" class="btn btn-outline-secondary me-3 position-relative">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
+                                    <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.618 4l1.5 7h8.764l1.5-7H3.618zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"/>
+                                </svg>
+                                <span id="cartCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">0</span>
+                            </a>
+
+                            <!-- Profile Dropdown -->
+                            <div class="dropdown">
+                                <button class="btn btn-link text-decoration-none dropdown-toggle d-flex align-items-center" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: bold;">
+                                        @if (!string.IsNullOrEmpty(username))
+                                        {
+                                            @username.Substring(0, 1).ToUpper()
+                                        }
+                                        else if (!string.IsNullOrEmpty(email))
+                                        {
+                                            @email.Substring(0, 1).ToUpper()
+                                        }
+                                        else
+                                        {
+                                            <text>U</text>
+                                        }
+                                    </div>
+                                    <span class="ms-2 d-none d-md-inline">@(username ?? email)</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                                    <li><h6 class="dropdown-header">@(username ?? email)</h6></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#">Thông tin cá nhân</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Booking" asp-action="MyBookings">Lịch sử đặt chỗ</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Ticket" asp-action="MyTickets">Vé của tôi</a></li>
+                                    @if (role == "Admin")
+                                    {
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Dashboard">Quản trị</a></li>
+                                    }
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" asp-controller="Account" asp-action="Logout">Đăng xuất</a></li>
+                                </ul>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -49,6 +104,25 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    @if (!string.IsNullOrEmpty(Context.Session.GetString("UserId")))
+    {
+        <script>
+            // Load cart count on page load
+            $(document).ready(function() {
+                loadCartCount();
+            });
+
+            function loadCartCount() {
+                $.get('@Url.Action("GetCartCount", "Cart")', function(data) {
+                    if (data.count > 0) {
+                        $('#cartCount').text(data.count).show();
+                    } else {
+                        $('#cartCount').hide();
+                    }
+                });
+            }
+        </script>
+    }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

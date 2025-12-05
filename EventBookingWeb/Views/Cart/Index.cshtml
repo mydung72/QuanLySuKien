@@ -1,0 +1,171 @@
+@model EventBookingWeb.ViewModels.Cart.CartViewModel
+@{
+    ViewData["Title"] = "Giỏ hàng";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Giỏ hàng của tôi</h2>
+
+    @if (Model.Items.Any())
+    {
+        <div class="row">
+            <div class="col-md-8">
+                @foreach (var item in Model.Items)
+                {
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <img src="@item.EventImageUrl" class="img-fluid rounded" alt="@item.EventTitle" style="height: 120px; object-fit: cover; width: 100%;">
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>@item.EventTitle</h5>
+                                    <p class="text-muted mb-1">
+                                        <i class="bi bi-calendar"></i> @item.EventStartDate.ToString("dd/MM/yyyy HH:mm")<br/>
+                                        <i class="bi bi-geo-alt"></i> @item.Location
+                                    </p>
+                                    <p class="mb-0">
+                                        <strong>Giá vé:</strong> @item.TicketPrice.ToString("N0") VNĐ<br/>
+                                        <span class="badge bg-@(item.AvailableSeats > 0 ? "success" : "danger")">
+                                            Còn @item.AvailableSeats chỗ
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    <div class="mb-2">
+                                        <label>Số lượng:</label>
+                                        <div class="input-group" style="width: 120px; margin: 0 auto;">
+                                            <button class="btn btn-sm btn-outline-secondary" type="button" onclick="updateQuantity(@item.CartId, @item.Quantity - 1)">-</button>
+                                            <input type="number" class="form-control form-control-sm text-center" value="@item.Quantity" min="1" max="@item.AvailableSeats" id="qty_@item.CartId" readonly>
+                                            <button class="btn btn-sm btn-outline-secondary" type="button" onclick="updateQuantity(@item.CartId, @item.Quantity + 1)">+</button>
+                                        </div>
+                                    </div>
+                                    <p class="mb-2">
+                                        <strong>Tổng: <span id="subtotal_@item.CartId">@item.SubTotal.ToString("N0")</span> VNĐ</strong>
+                                    </p>
+                                    <button class="btn btn-sm btn-danger" onclick="removeItem(@item.CartId)">Xóa</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="text-end mb-3">
+                    <form asp-action="Clear" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa tất cả sản phẩm?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-danger">Xóa tất cả</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Tổng kết</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Số lượng vé:</span>
+                            <strong>@Model.TotalItems</strong>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span><strong>Tổng tiền:</strong></span>
+                            <strong class="text-danger" style="font-size: 1.2em;">@Model.TotalAmount.ToString("N0") VNĐ</strong>
+                        </div>
+                        <a asp-controller="Booking" asp-action="Create" class="btn btn-success btn-lg w-100" onclick="return confirm('Bạn có muốn đặt chỗ cho tất cả sự kiện trong giỏ hàng?');">
+                            Đặt chỗ ngay
+                        </a>
+                        <a asp-controller="Event" asp-action="Index" class="btn btn-outline-secondary w-100 mt-2">
+                            Tiếp tục xem sự kiện
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-cart-x text-muted mb-3" viewBox="0 0 16 16">
+                <path d="M7.354 5.646a.5.5 0 1 0-.708.708L7.793 7.5 6.646 8.646a.5.5 0 1 0 .708.708L8.5 8.207l1.146 1.147a.5.5 0 0 0 .708-.708L9.207 7.5l1.147-1.146a.5.5 0 0 0-.708-.708L8.5 6.793 7.354 5.646z"/>
+                <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+            </svg>
+            <h4 class="text-muted">Giỏ hàng trống</h4>
+            <p class="text-muted">Bạn chưa có sự kiện nào trong giỏ hàng</p>
+            <a asp-controller="Event" asp-action="Index" class="btn btn-primary">Xem sự kiện</a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function updateQuantity(cartId, newQuantity) {
+            if (newQuantity < 1) {
+                removeItem(cartId);
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("Update", "Cart")',
+                type: 'POST',
+                data: {
+                    cartId: cartId,
+                    quantity: newQuantity,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#qty_' + cartId).val(response.subTotal > 0 ? newQuantity : 0);
+                        $('#subtotal_' + cartId).text(response.subTotal.toLocaleString('vi-VN'));
+                        loadCartCount();
+                        if (response.cartCount === 0) {
+                            location.reload();
+                        }
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function() {
+                    alert('Có lỗi xảy ra');
+                }
+            });
+        }
+
+        function removeItem(cartId) {
+            if (!confirm('Bạn có chắc muốn xóa sự kiện này khỏi giỏ hàng?')) {
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("Remove", "Cart")',
+                type: 'POST',
+                data: {
+                    cartId: cartId,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function() {
+                    alert('Có lỗi xảy ra');
+                }
+            });
+        }
+
+        function loadCartCount() {
+            $.get('@Url.Action("GetCartCount", "Cart")', function(data) {
+                if (data.count > 0) {
+                    $('#cartCount').text(data.count).show();
+                } else {
+                    $('#cartCount').hide();
+                }
+            });
+        }
+    </script>
+}
+
