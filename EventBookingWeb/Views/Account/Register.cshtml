@@ -1,4 +1,4 @@
-﻿@model EventBookingWeb.ViewModels.Account.RegisterViewModel
+@model EventBookingWeb.ViewModels.Account.RegisterViewModel
 @{
     ViewData["Title"] = "Đăng ký";
 }
@@ -7,46 +7,64 @@
 
 <div class="account-container">
     <div class="account-card">
-        <h2>Đăng ký tài khoản</h2>
+        <div class="account-icon">
+            <i class="bi bi-person-plus"></i>
+        </div>
+        <h2>Tạo tài khoản mới</h2>
+        <p class="subtitle">Đăng ký để khám phá và đặt vé sự kiện</p>
 
         <form asp-action="Register" method="post">
             @Html.AntiForgeryToken()
+            
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
 
             <div class="form-group">
-                <label asp-for="FullName">Họ và tên</label>
-                <input asp-for="FullName" class="form-control" placeholder="Nhập họ và tên" />
+                <label asp-for="FullName">
+                    <i class="bi bi-person"></i>Họ và tên
+                </label>
+                <input asp-for="FullName" class="form-control" placeholder="Nguyễn Văn A" autocomplete="name" />
                 <span asp-validation-for="FullName" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="Email">Email</label>
-                <input asp-for="Email" type="email" class="form-control" placeholder="Nhập email" />
+                <label asp-for="Email">
+                    <i class="bi bi-envelope"></i>Email
+                </label>
+                <input asp-for="Email" type="email" class="form-control" placeholder="your@email.com" autocomplete="email" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="Phone">Số điện thoại (tùy chọn)</label>
-                <input asp-for="Phone" type="tel" class="form-control" placeholder="Nhập số điện thoại" />
+                <label asp-for="Phone">
+                    <i class="bi bi-telephone"></i>Số điện thoại <small class="text-muted">(tùy chọn)</small>
+                </label>
+                <input asp-for="Phone" type="tel" class="form-control" placeholder="0123 456 789" autocomplete="tel" />
                 <span asp-validation-for="Phone" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="Password">Mật khẩu</label>
-                <input asp-for="Password" type="password" class="form-control" placeholder="Nhập mật khẩu" />
+                <label asp-for="Password">
+                    <i class="bi bi-lock"></i>Mật khẩu
+                </label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="Tối thiểu 6 ký tự" autocomplete="new-password" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="ConfirmPassword">Xác nhận mật khẩu</label>
-                <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Nhập lại mật khẩu" />
+                <label asp-for="ConfirmPassword">
+                    <i class="bi bi-lock-fill"></i>Xác nhận mật khẩu
+                </label>
+                <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Nhập lại mật khẩu" autocomplete="new-password" />
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
 
-            <button type="submit" class="btn-submit">Đăng ký</button>
+            <button type="submit" class="btn-submit">
+                <i class="bi bi-person-check"></i>Đăng ký
+            </button>
 
-            <div asp-validation-summary="ModelOnly" class="text-danger mt-3"></div>
+            <div class="divider">hoặc</div>
 
-            <p class="text-note">
+            <p class="text-note mb-0">
                 Đã có tài khoản?
                 <a asp-action="Login">Đăng nhập ngay</a>
             </p>

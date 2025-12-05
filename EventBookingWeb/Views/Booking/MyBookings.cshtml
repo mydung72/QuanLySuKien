@@ -3,14 +3,23 @@
     ViewData["Title"] = "Lịch sử đặt chỗ";
 }
 
-<div class="container mt-4">
-    <h2 class="mb-4">Lịch sử đặt chỗ của tôi</h2>
+<div class="container my-4">
+    <div class="d-flex align-items-center mb-4">
+        <i class="bi bi-clock-history text-primary me-3" style="font-size: 2rem;"></i>
+        <div>
+            <h2 class="mb-0">Lịch sử đặt chỗ</h2>
+            <p class="text-muted mb-0">Quản lý tất cả đơn đặt chỗ của bạn</p>
+        </div>
+    </div>
 
     <!-- Filter -->
-    <div class="mb-3">
-        <form method="get" asp-action="MyBookings" class="row g-3">
-            <div class="col-md-4">
-                <label>Lọc theo trạng thái</label>
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <form method="get" asp-action="MyBookings" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">
+                        <i class="bi bi-funnel me-1"></i>Lọc theo trạng thái
+                    </label>
                 @{
                     var statusValues = new[] {
                         new { Value = "", Text = "Tất cả", Status = (EventBookingWeb.Models.Enums.PaymentStatus?)null },
@@ -34,48 +43,67 @@
                     }
                 </select>
             </div>
-            <div class="col-md-2">
-                <label>&nbsp;</label>
-                <button type="submit" class="btn btn-primary d-block">Lọc</button>
-            </div>
-        </form>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-funnel me-1"></i>Lọc
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
     @if (Model.Bookings.Any())
     {
-        <div class="row">
+        <div class="row g-3 mb-4">
             @foreach (var booking in Model.Bookings)
             {
-                <div class="col-md-12 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="row">
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-3">
+                            <div class="row g-3">
                                 <div class="col-md-2">
-                                    <img src="@booking.EventImageUrl" class="img-fluid rounded" alt="@booking.EventTitle">
+                                    <div style="border-radius: var(--radius-lg); overflow: hidden; height: 120px;">
+                                        <img src="@booking.EventImageUrl" class="img-fluid w-100 h-100" alt="@booking.EventTitle" style="object-fit: cover;">
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <h5>@booking.EventTitle</h5>
-                                    <p>
-                                        <i class="bi bi-calendar"></i> @booking.EventStartDate.ToString("dd/MM/yyyy HH:mm")<br/>
-                                        <i class="bi bi-ticket"></i> Số lượng: @booking.Quantity vé<br/>
-                                        <strong>Tổng tiền:</strong> @booking.TotalAmount.ToString("N0") VNĐ
-                                    </p>
-                                    <span class="badge bg-@(booking.PaymentStatus == EventBookingWeb.Models.Enums.PaymentStatus.Paid ? "success" : 
+                                    <h5 class="mb-2">@booking.EventTitle</h5>
+                                    <div class="text-muted small mb-2">
+                                        <div class="mb-1">
+                                            <i class="bi bi-calendar3 text-primary me-1"></i>
+                                            @booking.EventStartDate.ToString("dd/MM/yyyy HH:mm")
+                                        </div>
+                                        <div class="mb-1">
+                                            <i class="bi bi-ticket-perforated text-primary me-1"></i>
+                                            @booking.Quantity vé
+                                        </div>
+                                        <div>
+                                            <i class="bi bi-cash text-primary me-1"></i>
+                                            <strong class="text-primary">@booking.TotalAmount.ToString("N0") VNĐ</strong>
+                                        </div>
+                                    </div>
+                                    <span class="badge px-3 py-2 bg-@(booking.PaymentStatus == EventBookingWeb.Models.Enums.PaymentStatus.Paid ? "success" : 
                                         booking.PaymentStatus == EventBookingWeb.Models.Enums.PaymentStatus.Pending ? "warning" : 
                                         booking.PaymentStatus == EventBookingWeb.Models.Enums.PaymentStatus.Cancelled ? "danger" : "info")">
                                         @booking.PaymentStatus
                                     </span>
                                 </div>
-                                <div class="col-md-4 text-end">
-                                    <a asp-action="Details" asp-route-id="@booking.BookingId" class="btn btn-info btn-sm">Chi tiết</a>
-                                    @if (booking.CanCancel)
-                                    {
-                                        <form asp-action="Cancel" asp-route-id="@booking.BookingId" method="post" class="d-inline" 
-                                              onsubmit="return confirm('Bạn có chắc muốn hủy đặt chỗ này?');">
-                                            @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-danger btn-sm">Hủy</button>
-                                        </form>
-                                    }
+                                <div class="col-md-4 d-flex align-items-center justify-content-end">
+                                    <div class="d-flex gap-2">
+                                        <a asp-action="Details" asp-route-id="@booking.BookingId" class="btn btn-outline-primary">
+                                            <i class="bi bi-eye me-1"></i>Chi tiết
+                                        </a>
+                                        @if (booking.CanCancel)
+                                        {
+                                            <form asp-action="Cancel" asp-route-id="@booking.BookingId" method="post" class="d-inline" 
+                                                  onsubmit="return confirm('Bạn có chắc muốn hủy đặt chỗ này?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-outline-danger">
+                                                    <i class="bi bi-x-circle me-1"></i>Hủy
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -101,8 +129,19 @@
     }
     else
     {
-        <div class="alert alert-info">
-            Bạn chưa có đặt chỗ nào. <a asp-controller="Event" asp-action="Index">Xem sự kiện</a>
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="bi bi-inbox display-1 text-muted"></i>
+                    </div>
+                    <h3 class="mb-3">Chưa có đặt chỗ nào</h3>
+                    <p class="text-muted mb-4">Bạn chưa đặt chỗ cho sự kiện nào. Hãy khám phá các sự kiện thú vị và đặt chỗ ngay!</p>
+                    <a asp-controller="Event" asp-action="Index" class="btn btn-primary btn-lg">
+                        <i class="bi bi-search me-2"></i>Khám phá sự kiện
+                    </a>
+                </div>
+            </div>
         </div>
     }
 </div>
