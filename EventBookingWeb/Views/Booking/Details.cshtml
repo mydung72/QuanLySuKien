@@ -1,0 +1,230 @@
+@model EventBookingWeb.ViewModels.Booking.BookingDetailViewModel
+@{
+    ViewData["Title"] = "Chi tiết đặt chỗ";
+}
+
+<div class="container my-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb bg-transparent px-0">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Booking" asp-action="MyBookings">Đặt chỗ của tôi</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Chi tiết</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Booking Info Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h4 class="mb-2">
+                                <i class="bi bi-ticket-detailed text-primary me-2"></i>Đơn đặt chỗ #@Model.BookingId
+                            </h4>
+                            <span class="badge px-3 py-2 bg-@(Model.PaymentStatus == EventBookingWeb.Models.Enums.PaymentStatus.Paid ? "success" : 
+                                Model.PaymentStatus == EventBookingWeb.Models.Enums.PaymentStatus.Pending ? "warning" : 
+                                Model.PaymentStatus == EventBookingWeb.Models.Enums.PaymentStatus.Cancelled ? "danger" : "info")">
+                                @Model.PaymentStatus
+                            </span>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted d-block">Ngày đặt</small>
+                            <strong>@Model.BookingDate.ToString("dd/MM/yyyy HH:mm")</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Event Info -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">
+                            <i class="bi bi-calendar-event text-primary me-2"></i>Thông tin sự kiện
+                        </h5>
+                        <div class="bg-light rounded p-3">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    @if (!string.IsNullOrEmpty(Model.Event.ImageUrl))
+                                    {
+                                        <img src="@Model.Event.ImageUrl" alt="@Model.Event.Title" class="img-fluid rounded" style="height: 120px; width: 100%; object-fit: cover;">
+                                    }
+                                </div>
+                                <div class="col-md-9">
+                                    <h6 class="mb-2">@Model.Event.Title</h6>
+                                    <div class="small text-muted">
+                                        <div class="mb-1">
+                                            <i class="bi bi-clock text-primary me-2"></i>
+                                            @Model.Event.StartDate.ToString("HH:mm, dd/MM/yyyy")
+                                        </div>
+                                        <div>
+                                            <i class="bi bi-geo-alt text-primary me-2"></i>
+                                            @Model.Event.Location
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer Info -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">
+                            <i class="bi bi-person text-primary me-2"></i>Thông tin người đặt
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="bg-primary bg-opacity-10 rounded p-2">
+                                            <i class="bi bi-person-fill text-primary"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <div class="small text-muted">Họ tên</div>
+                                        <div class="fw-semibold">@Model.User.FullName</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="bg-info bg-opacity-10 rounded p-2">
+                                            <i class="bi bi-envelope text-info"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <div class="small text-muted">Email</div>
+                                        <div class="fw-semibold">@Model.User.Email</div>
+                                    </div>
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.User.Phone))
+                            {
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="flex-shrink-0">
+                                            <div class="bg-success bg-opacity-10 rounded p-2">
+                                                <i class="bi bi-telephone text-success"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <div class="small text-muted">Số điện thoại</div>
+                                            <div class="fw-semibold">@Model.User.Phone</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Tickets List -->
+                    @if (Model.Tickets.Any())
+                    {
+                        <div class="mb-4">
+                            <h5 class="mb-3">
+                                <i class="bi bi-ticket-perforated text-primary me-2"></i>Danh sách vé (@Model.Tickets.Count vé)
+                            </h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Mã vé</th>
+                                            <th>Trạng thái</th>
+                                            <th class="text-end">Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var ticket in Model.Tickets)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <code class="text-primary">@ticket.TicketCode</code>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-success">Hợp lệ</span>
+                                                </td>
+                                                <td class="text-end">
+                                                    <a asp-controller="Ticket" asp-action="Details" asp-route-id="@ticket.TicketId" class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-eye me-1"></i>Xem vé
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="d-flex gap-2">
+                <a asp-controller="Booking" asp-action="MyBookings" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Quay lại
+                </a>
+                @if (Model.CanViewTickets && Model.Tickets.Any())
+                {
+                    <a asp-controller="Ticket" asp-action="MyTickets" class="btn btn-primary">
+                        <i class="bi bi-ticket-perforated me-1"></i>Xem tất cả vé
+                    </a>
+                }
+            </div>
+        </div>
+
+        <!-- Summary Sidebar -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-md sticky-top" style="top: 90px;">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-4">
+                        <i class="bi bi-receipt text-primary me-2"></i>Tổng kết
+                    </h5>
+                    
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Số lượng vé</span>
+                            <strong>@Model.Quantity vé</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Giá mỗi vé</span>
+                            <strong>@Model.Event.TicketPrice.ToString("N0") VNĐ</strong>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-semibold">Tổng tiền</span>
+                            <span class="h4 mb-0 text-primary">@Model.TotalAmount.ToString("N0") VNĐ</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-light rounded p-3 mb-3">
+                        <div class="small text-muted mb-1">Phương thức thanh toán</div>
+                        <div class="fw-semibold">@(!string.IsNullOrEmpty(Model.PaymentMethod) ? Model.PaymentMethod : "Chưa thanh toán")</div>
+                    </div>
+
+                    <div class="bg-light rounded p-3 mb-3">
+                        <div class="small text-muted mb-1">Trạng thái</div>
+                        <span class="badge bg-@(Model.PaymentStatus == EventBookingWeb.Models.Enums.PaymentStatus.Paid ? "success" : 
+                            Model.PaymentStatus == EventBookingWeb.Models.Enums.PaymentStatus.Pending ? "warning" : 
+                            Model.PaymentStatus == EventBookingWeb.Models.Enums.PaymentStatus.Cancelled ? "danger" : "info") px-3 py-2">
+                            @Model.PaymentStatus
+                        </span>
+                    </div>
+
+                    @if (Model.CanCancel)
+                    {
+                        <div class="mt-4 pt-3 border-top">
+                            <form asp-controller="Booking" asp-action="Cancel" asp-route-id="@Model.BookingId" method="post" 
+                                  onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn đặt chỗ này?');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-outline-danger w-100">
+                                    <i class="bi bi-x-circle me-2"></i>Hủy đặt chỗ
+                                </button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
