@@ -22,4 +22,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\uploads\events\" />
+    <Folder Include="wwwroot\uploads\banners\" />
+    <Folder Include="wwwroot\uploads\news\" />
+  </ItemGroup>
+
 </Project>
