@@ -1,0 +1,135 @@
+@model EventBookingWeb.ViewModels.Admin.UserManagementViewModel
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Quản lý người dùng</h1>
+        <a asp-action="Create" class="btn btn-success">Thêm người dùng mới</a>
+    </div>
+
+    <!-- Filter -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="get" asp-action="Index" class="row g-3">
+                <div class="col-md-3">
+                    <label>Vai trò</label>
+                    <select name="filterRole" class="form-control">
+                        <option value="">Tất cả</option>
+                        <option value="0" @(Model.FilterRole == EventBookingWeb.Models.Enums.UserRole.User ? "selected" : "")>User</option>
+                        <option value="1" @(Model.FilterRole == EventBookingWeb.Models.Enums.UserRole.Admin ? "selected" : "")>Admin</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label>Trạng thái</label>
+                    <select name="filterStatus" class="form-control">
+                        <option value="">Tất cả</option>
+                        <option value="0" @(Model.FilterStatus == EventBookingWeb.Models.Enums.UserStatus.Active ? "selected" : "")>Active</option>
+                        <option value="1" @(Model.FilterStatus == EventBookingWeb.Models.Enums.UserStatus.Locked ? "selected" : "")>Locked</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label>Tìm kiếm</label>
+                    <input type="text" name="searchTerm" class="form-control" placeholder="Tên hoặc email..." value="@Model.SearchTerm" />
+                </div>
+                <div class="col-md-2">
+                    <label>&nbsp;</label>
+                    <button type="submit" class="btn btn-primary d-block w-100">Lọc</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    @if (Model.Users.Any())
+    {
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Họ tên</th>
+                            <th>Email</th>
+                            <th>Số điện thoại</th>
+                            <th>Vai trò</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày tạo</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model.Users)
+                        {
+                            <tr>
+                                <td>@user.UserId</td>
+                                <td>@user.FullName</td>
+                                <td>@user.Email</td>
+                                <td>@user.Phone</td>
+                                <td><span class="badge bg-@(user.Role == EventBookingWeb.Models.Enums.UserRole.Admin ? "danger" : "primary")">@user.Role</span></td>
+                                <td><span class="badge bg-@(user.UserStatus == EventBookingWeb.Models.Enums.UserStatus.Active ? "success" : "danger")">@user.UserStatus</span></td>
+                                <td>@user.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@user.UserId" class="btn btn-sm btn-warning">Sửa</a>
+                                    @if (user.UserStatus == EventBookingWeb.Models.Enums.UserStatus.Active)
+                                    {
+                                        <form asp-action="Lock" asp-route-id="@user.UserId" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-secondary" onclick="return confirm('Bạn có chắc muốn khóa tài khoản này?');">Khóa</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="Unlock" asp-route-id="@user.UserId" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-success">Mở khóa</button>
+                                        </form>
+                                    }
+                                    <form asp-action="Delete" asp-route-id="@user.UserId" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa người dùng này?');">Xóa</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        @if (Model.TotalPages > 1)
+        {
+            <nav class="mt-3">
+                <ul class="pagination justify-content-center">
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                            <a class="page-link" href="?page=@i&filterRole=@Model.FilterRole&filterStatus=@Model.FilterStatus&searchTerm=@Model.SearchTerm">@i</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info">Không tìm thấy người dùng nào.</div>
+    }
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <script>
+        alert('@TempData["Success"]');
+    </script>
+}
+@if (TempData["Error"] != null)
+{
+    <script>
+        alert('@TempData["Error"]');
+    </script>
+}
+

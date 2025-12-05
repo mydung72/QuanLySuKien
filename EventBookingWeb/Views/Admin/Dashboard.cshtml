@@ -1,41 +1,145 @@
 ﻿@{
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    ViewData["Title"] = "Hệ thống quản lý";
+    ViewData["Title"] = "Dashboard";
+    Layout = "_AdminLayout";
 }
 
-@* <div class="dashboard">
-    <div class="card blue">
-        <i class="fa fa-calendar fa-2x"></i>
-        <h3>12</h3>
-        <p>Sự kiện hiện có</p>
+<div class="container-fluid">
+    <h1 class="mb-4">Dashboard</h1>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Người dùng</h5>
+                    <h2>@ViewBag.TotalUsers</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Sự kiện</h5>
+                    <h2>@ViewBag.TotalEvents</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Đặt chỗ</h5>
+                    <h2>@ViewBag.TotalBookings</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Doanh thu</h5>
+                    <h2>@(((decimal)ViewBag.TotalRevenue).ToString("N0")) VNĐ</h2>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="card green">
-        <i class="fa fa-users fa-2x"></i>
-        <h3>56</h3>
-        <p>Người dùng</p>
+
+    <div class="row">
+        <!-- Recent Bookings -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Đặt chỗ gần đây</h5>
+                </div>
+                <div class="card-body">
+                    @{
+                        var recentBookings = ViewBag.RecentBookings as List<EventBookingWeb.Models.DomainModels.DBBooking>;
+                    }
+                    @if (recentBookings != null && recentBookings.Any())
+                    {
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Sự kiện</th>
+                                    <th>Người đặt</th>
+                                    <th>Ngày</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var booking in recentBookings)
+                                {
+                                    <tr>
+                                        <td>@booking.Event?.Title</td>
+                                        <td>@booking.User?.FullName</td>
+                                        <td>@booking.BookingDate.ToString("dd/MM")</td>
+                                        <td><span class="badge bg-info">@booking.PaymentStatus</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>Chưa có đặt chỗ nào.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Events -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Sự kiện sắp diễn ra</h5>
+                </div>
+                <div class="card-body">
+                    @{
+                        var upcomingEvents = ViewBag.UpcomingEvents as List<EventBookingWeb.Models.DomainModels.DBEvent>;
+                    }
+                    @if (upcomingEvents != null && upcomingEvents.Any())
+                    {
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Tên sự kiện</th>
+                                    <th>Ngày</th>
+                                    <th>Chỗ trống</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var eventItem in upcomingEvents)
+                                {
+                                    <tr>
+                                        <td>@eventItem.Title</td>
+                                        <td>@eventItem.StartDate.ToString("dd/MM/yyyy")</td>
+                                        <td>@eventItem.AvailableSeats/@eventItem.TotalSeats</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>Chưa có sự kiện nào.</p>
+                    }
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="card orange">
-        <i class="fa fa-ticket fa-2x"></i>
-        <h3>8</h3>
-        <p>Đặt chỗ hôm nay</p>
-    </div>
-    <div class="card purple">
-        <i class="fa fa-bullhorn fa-2x"></i>
-        <h3>5</h3>
-        <p>Chiến dịch truyền thông</p>
-    </div>
-    <div class="card pink">
-        <i class="fa fa-chart-line fa-2x"></i>
-        <h3>2</h3>
-        <p>Báo cáo mới</p>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Truy cập nhanh</h5>
+                </div>
+                <div class="card-body">
+                    <a asp-controller="UserManagement" asp-action="Index" class="btn btn-primary me-2">Quản lý người dùng</a>
+                    <a asp-controller="EventManagement" asp-action="Index" class="btn btn-success me-2">Quản lý sự kiện</a>
+                    <a asp-controller="BookingManagement" asp-action="Index" class="btn btn-info me-2">Quản lý đặt chỗ</a>
+                    <a asp-controller="Report" asp-action="Revenue" class="btn btn-warning me-2">Báo cáo doanh thu</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-
-<div class="table-container">
-    <h3>Sự kiện nổi bật</h3>
-    <table class="table table-striped">
-        <tr><th>Tên sự kiện</th><th>Ngày diễn ra</th><th>Trạng thái</th></tr>
-        <tr><td>Hội thảo CNTT 2025</td><td>15/12/2025</td><td>Đang mở</td></tr>
-        <tr><td>Workshop UX/UI</td><td>20/12/2025</td><td>Chuẩn bị</td></tr>
-    </table>
-</div> *@

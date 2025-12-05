@@ -1,0 +1,94 @@
+@model EventBookingWeb.ViewModels.Booking.BookingListViewModel
+@{
+    ViewData["Title"] = "Lịch sử đặt chỗ";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Lịch sử đặt chỗ của tôi</h2>
+
+    <!-- Filter -->
+    <div class="mb-3">
+        <form method="get" asp-action="MyBookings" class="row g-3">
+            <div class="col-md-4">
+                <label>Lọc theo trạng thái</label>
+                <select name="status" class="form-control">
+                    <option value="">Tất cả</option>
+                    <option value="0" @(Model.FilterStatus == EventBookingWeb.Models.Enums.PaymentStatus.Pending ? "selected" : "")>Chờ thanh toán</option>
+                    <option value="1" @(Model.FilterStatus == EventBookingWeb.Models.Enums.PaymentStatus.Reserved ? "selected" : "")>Đã đặt chỗ</option>
+                    <option value="2" @(Model.FilterStatus == EventBookingWeb.Models.Enums.PaymentStatus.Paid ? "selected" : "")>Đã thanh toán</option>
+                    <option value="3" @(Model.FilterStatus == EventBookingWeb.Models.Enums.PaymentStatus.Cancelled ? "selected" : "")>Đã hủy</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>&nbsp;</label>
+                <button type="submit" class="btn btn-primary d-block">Lọc</button>
+            </div>
+        </form>
+    </div>
+
+    @if (Model.Bookings.Any())
+    {
+        <div class="row">
+            @foreach (var booking in Model.Bookings)
+            {
+                <div class="col-md-12 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <img src="@booking.EventImageUrl" class="img-fluid rounded" alt="@booking.EventTitle">
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>@booking.EventTitle</h5>
+                                    <p>
+                                        <i class="bi bi-calendar"></i> @booking.EventStartDate.ToString("dd/MM/yyyy HH:mm")<br/>
+                                        <i class="bi bi-ticket"></i> Số lượng: @booking.Quantity vé<br/>
+                                        <strong>Tổng tiền:</strong> @booking.TotalAmount.ToString("N0") VNĐ
+                                    </p>
+                                    <span class="badge bg-@(booking.PaymentStatus == EventBookingWeb.Models.Enums.PaymentStatus.Paid ? "success" : 
+                                        booking.PaymentStatus == EventBookingWeb.Models.Enums.PaymentStatus.Pending ? "warning" : 
+                                        booking.PaymentStatus == EventBookingWeb.Models.Enums.PaymentStatus.Cancelled ? "danger" : "info")">
+                                        @booking.PaymentStatus
+                                    </span>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <a asp-action="Details" asp-route-id="@booking.BookingId" class="btn btn-info btn-sm">Chi tiết</a>
+                                    @if (booking.CanCancel)
+                                    {
+                                        <form asp-action="Cancel" asp-route-id="@booking.BookingId" method="post" class="d-inline" 
+                                              onsubmit="return confirm('Bạn có chắc muốn hủy đặt chỗ này?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-danger btn-sm">Hủy</button>
+                                        </form>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        @if (Model.TotalPages > 1)
+        {
+            <nav>
+                <ul class="pagination justify-content-center">
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                            <a class="page-link" href="?page=@i&status=@Model.FilterStatus">@i</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info">
+            Bạn chưa có đặt chỗ nào. <a asp-controller="Event" asp-action="Index">Xem sự kiện</a>
+        </div>
+    }
+</div>
+

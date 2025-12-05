@@ -1,0 +1,98 @@
+@model EventBookingWeb.ViewModels.Event.EventListViewModel
+@{
+    ViewData["Title"] = "Danh sách sự kiện";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Danh sách sự kiện</h2>
+
+    <!-- Filter Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="Index">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label>Danh mục</label>
+                        <select name="filter.CategoryId" class="form-control">
+                            <option value="">Tất cả</option>
+                            @foreach (var category in ViewBag.Categories as List<EventBookingWeb.Models.DomainModels.DBCategoryEvent>)
+                            {
+                                <option value="@category.CategoryEventId" 
+                                    @(Model.Filter.CategoryId == category.CategoryEventId ? "selected" : "")>
+                                    @category.CategoryEventName
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label>Từ ngày</label>
+                        <input type="date" name="filter.StartDate" class="form-control" value="@Model.Filter.StartDate?.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="col-md-3">
+                        <label>Đến ngày</label>
+                        <input type="date" name="filter.EndDate" class="form-control" value="@Model.Filter.EndDate?.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="col-md-3">
+                        <label>Tìm kiếm</label>
+                        <input type="text" name="filter.SearchTerm" class="form-control" placeholder="Tên sự kiện..." value="@Model.Filter.SearchTerm" />
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-primary">Lọc</button>
+                        <a asp-action="Index" class="btn btn-secondary">Xóa bộ lọc</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Events Grid -->
+    <div class="row">
+        @if (Model.Events.Any())
+        {
+            foreach (var eventItem in Model.Events)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <img src="@eventItem.ImageUrl" class="card-img-top" alt="@eventItem.Title" style="height: 200px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">@eventItem.Title</h5>
+                            <p class="card-text">
+                                <i class="bi bi-calendar"></i> @eventItem.StartDate.ToString("dd/MM/yyyy HH:mm")<br/>
+                                <i class="bi bi-geo-alt"></i> @eventItem.Location<br/>
+                                <i class="bi bi-ticket"></i> @eventItem.TicketPrice.ToString("N0") VNĐ<br/>
+                                <span class="badge bg-@(eventItem.AvailableSeats > 0 ? "success" : "danger")">
+                                    Còn @eventItem.AvailableSeats chỗ
+                                </span>
+                            </p>
+                            <a asp-action="Details" asp-route-id="@eventItem.EventId" class="btn btn-primary">Chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <p class="text-center">Không tìm thấy sự kiện nào.</p>
+            </div>
+        }
+    </div>
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav>
+            <ul class="pagination justify-content-center">
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                        <a class="page-link" href="?page=@i&filter.CategoryId=@Model.Filter.CategoryId&filter.SearchTerm=@Model.Filter.SearchTerm">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</div>
+

@@ -1,8 +1,95 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Trang chủ";
+    var banners = ViewBag.Banners as List<EventBookingWeb.Models.DomainModels.DBBanner>;
+    var upcomingEvents = ViewBag.UpcomingEvents as List<EventBookingWeb.Models.DomainModels.DBEvent>;
+    var latestNews = ViewBag.LatestNews as List<EventBookingWeb.Models.DomainModels.DBNews>;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Banner Carousel -->
+@if (banners != null && banners.Any())
+{
+    <div id="bannerCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            @for (int i = 0; i < banners.Count; i++)
+            {
+                <div class="carousel-item @(i == 0 ? "active" : "")">
+                    @if (!string.IsNullOrEmpty(banners[i].LinkUrl))
+                    {
+                        <a href="@banners[i].LinkUrl">
+                            <img src="@banners[i].ImageUrl" class="d-block w-100" alt="Banner" style="max-height: 400px; object-fit: cover;">
+                        </a>
+                    }
+                    else
+                    {
+                        <img src="@banners[i].ImageUrl" class="d-block w-100" alt="Banner" style="max-height: 400px; object-fit: cover;">
+                    }
+                </div>
+            }
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        </button>
+    </div>
+}
+
+<div class="container">
+    <!-- Upcoming Events Section -->
+    <section class="mb-5">
+        <h2 class="mb-4">Sự kiện sắp diễn ra</h2>
+        <div class="row">
+            @if (upcomingEvents != null && upcomingEvents.Any())
+            {
+                foreach (var eventItem in upcomingEvents)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <img src="@eventItem.ImageUrl" class="card-img-top" alt="@eventItem.Title" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title">@eventItem.Title</h5>
+                                <p class="card-text">
+                                    <i class="bi bi-calendar"></i> @eventItem.StartDate.ToString("dd/MM/yyyy HH:mm")<br/>
+                                    <i class="bi bi-geo-alt"></i> @eventItem.Location<br/>
+                                    <i class="bi bi-ticket"></i> @eventItem.TicketPrice.ToString("N0") VNĐ
+                                </p>
+                                <a asp-controller="Event" asp-action="Details" asp-route-id="@eventItem.EventId" class="btn btn-primary">Xem chi tiết</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>Chưa có sự kiện nào sắp diễn ra.</p>
+            }
+        </div>
+        <div class="text-center">
+            <a asp-controller="Event" asp-action="Index" class="btn btn-outline-primary">Xem tất cả sự kiện</a>
+        </div>
+    </section>
+
+    <!-- Latest News Section -->
+    @if (latestNews != null && latestNews.Any())
+    {
+        <section class="mb-5">
+            <h2 class="mb-4">Tin tức mới nhất</h2>
+            <div class="row">
+                @foreach (var news in latestNews)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <img src="@news.ImageUrl" class="card-img-top" alt="@news.Title" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title">@news.Title</h5>
+                                <p class="text-muted"><small>@news.CreatedAt.ToString("dd/MM/yyyy")</small></p>
+                                <p class="card-text">@(news.Event?.Title ?? "")</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    }
 </div>

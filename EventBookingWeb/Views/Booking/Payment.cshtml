@@ -1,0 +1,56 @@
+@model EventBookingWeb.ViewModels.Booking.PaymentViewModel
+@{
+    ViewData["Title"] = "Thanh toán";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h3>Thanh toán</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5>Thông tin đặt chỗ</h5>
+                        <p><strong>Sự kiện:</strong> @Model.EventTitle</p>
+                        <p><strong>Ngày:</strong> @Model.EventDate?.ToString("dd/MM/yyyy HH:mm")</p>
+                        <p><strong>Số lượng:</strong> @Model.Quantity vé</p>
+                        <hr>
+                        <h4><strong>Tổng tiền:</strong> @Model.Amount.ToString("N0") VNĐ</h4>
+                    </div>
+
+                    <form asp-action="ProcessPayment" method="post">
+                        <input type="hidden" asp-for="BookingId" />
+                        <input type="hidden" asp-for="Amount" />
+
+                        <div class="mb-3">
+                            <label class="form-label">Chọn phương thức thanh toán</label>
+                            <div class="list-group">
+                                <label class="list-group-item">
+                                    <input class="form-check-input me-1" type="radio" name="PaymentMethod" value="VNPay" checked>
+                                    <strong>VNPay</strong> - Thanh toán qua cổng VNPay
+                                </label>
+                                <label class="list-group-item">
+                                    <input class="form-check-input me-1" type="radio" name="PaymentMethod" value="Cash">
+                                    <strong>Tiền mặt</strong> - Thanh toán trực tiếp tại sự kiện
+                                </label>
+                            </div>
+                            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">Thanh toán</button>
+                            <a asp-action="Details" asp-route-id="@Model.BookingId" class="btn btn-secondary">Quay lại</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
