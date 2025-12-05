@@ -1,0 +1,91 @@
+﻿@using EventBookingWeb.Models.Enums
+@model IEnumerable<EventBookingWeb.Models.DomainModels.DBEvent>
+
+@{
+    ViewData["Title"] = "Quản lý sự kiện";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="flex min-h-screen bg-gray-100">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white shadow-md p-4">
+        <div class="text-center mb-6">
+            <div class="w-20 h-20 mx-auto bg-gray-200 rounded-full mb-2"></div>
+            <h2 class="text-lg font-semibold">Admin</h2>
+        </div>
+
+        <nav class="space-y-2">
+            <a href="/Admin/Dashboard" class="block px-3 py-2 rounded hover:bg-gray-200">Trang chủ</a>
+            <a href="/Admin/Events" class="block px-3 py-2 rounded bg-blue-100 font-semibold">Quản lý sự kiện</a>
+            <a href="/Admin/Users" class="block px-3 py-2 rounded hover:bg-gray-200">Quản lý người dùng</a>
+            <a href="/Admin/Categories" class="block px-3 py-2 rounded hover:bg-gray-200">Quản lý danh mục</a>
+            <a href="/Admin/Bookings" class="block px-3 py-2 rounded hover:bg-gray-200">Quản lý đặt chỗ</a>
+            <a href="/Account/Logout" class="block px-3 py-2 rounded text-red-600 hover:bg-gray-200">Đăng xuất</a>
+        </nav>
+    </aside>
+
+    <!-- Main content -->
+    <main class="flex-1 p-8">
+        <h1 class="text-2xl font-bold mb-6">Quản lý sự kiện</h1>
+
+        <div class="flex justify-between mb-4">
+            <form method="get" asp-action="Events" class="flex gap-2">
+                <input type="text" name="search" placeholder="Tìm kiếm..." class="border rounded px-3 py-2 w-64" />
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Tìm kiếm</button>
+            </form>
+            <a href="/Admin/CreateEvent" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">+ Thêm sự kiện mới</a>
+        </div>
+
+        <table class="w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+            <thead class="bg-gray-50">
+                <tr class="text-left">
+                    <th class="px-4 py-2 border">STT</th>
+                    <th class="px-4 py-2 border">Tên sự kiện</th>
+                    <th class="px-4 py-2 border">Danh mục</th>
+                    <th class="px-4 py-2 border">Ngày diễn ra</th>
+                    <th class="px-4 py-2 border">Trạng thái</th>
+                    <th class="px-4 py-2 border text-center">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    var stt = 1;
+                    foreach (var e in Model)
+                    {
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-2 border">@stt</td>
+                            <td class="px-4 py-2 border">@e.Title</td>
+                            <td class="px-4 py-2 border">@e.CategoryEvents?[0].CategoryEventName</td>
+                            <td class="px-4 py-2 border">@e.StartDate.ToString("dd/MM/yyyy")</td>
+                            <td class="px-4 py-2 border">
+                                <form asp-action="UpdateStatus" asp-controller="Admin" method="post" class="flex gap-2 items-center">
+                                    <input type="hidden" name="eventId" value="@e.EventId" />
+                                    <select name="status" class="border rounded px-2 py-1">
+                                        <option value="Sắp diễn ra" selected="@(e.EventStatus == EventStatus.Upcoming)">Sắp diễn ra</option>
+                                        <option value="Đang diễn ra" selected="@(e.EventStatus == EventStatus.Ongoing)">Đang diễn ra</option>
+                                        <option value="Đã kết thúc" selected="@(e.EventStatus == EventStatus.Ended)">Đã kết thúc</option>
+                                    </select>
+                                    <button type="submit" class="text-sm bg-blue-500 text-white px-2 py-1 rounded">Lưu</button>
+                                </form>
+                            </td>
+                            <td class="px-4 py-2 border text-center space-x-2">
+                                <a href="/Admin/EditEvent/@e.EventId" class="text-blue-600 hover:underline">Sửa</a>
+                                <a href="/Admin/DeleteEvent/@e.EventId" class="text-red-600 hover:underline" onclick="return confirm('Bạn có chắc muốn xóa sự kiện này?');">Xóa</a>
+                                <a href="/Admin/AssignCategory/@e.EventId" class="text-green-600 hover:underline">Phân loại</a>
+                            </td>
+                        </tr>
+                        stt++;
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-gray-500">Chưa có sự kiện nào.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </main>
+</div>
+

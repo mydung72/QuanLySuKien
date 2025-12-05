@@ -1,38 +1,77 @@
-﻿@{
+@model EventBookingWeb.ViewModels.Account.RegisterViewModel
+@{
     ViewData["Title"] = "Đăng ký";
 }
 
+<link rel="stylesheet" href="~/css/account.css" />
+
 <div class="account-container">
     <div class="account-card">
-        <h2>Đăng ký tài khoản</h2>
+        <div class="account-icon">
+            <i class="bi bi-person-plus"></i>
+        </div>
+        <h2>Tạo tài khoản mới</h2>
+        <p class="subtitle">Đăng ký để khám phá và đặt vé sự kiện</p>
 
         <form asp-action="Register" method="post">
+            @Html.AntiForgeryToken()
+            
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
             <div class="form-group">
-                <label>Họ và tên</label>
-                <input type="text" name="username" class="form-control" placeholder="Nhập họ và tên" required />
+                <label asp-for="FullName">
+                    <i class="bi bi-person"></i>Họ và tên
+                </label>
+                <input asp-for="FullName" class="form-control" placeholder="Nguyễn Văn A" autocomplete="name" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label>Email</label>
-                <input type="email" name="email" class="form-control" placeholder="Nhập email" required />
+                <label asp-for="Email">
+                    <i class="bi bi-envelope"></i>Email
+                </label>
+                <input asp-for="Email" type="email" class="form-control" placeholder="your@email.com" autocomplete="email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label>Mật khẩu</label>
-                <input type="password" name="password" class="form-control" placeholder="Nhập mật khẩu" required />
+                <label asp-for="Phone">
+                    <i class="bi bi-telephone"></i>Số điện thoại <small class="text-muted">(tùy chọn)</small>
+                </label>
+                <input asp-for="Phone" type="tel" class="form-control" placeholder="0123 456 789" autocomplete="tel" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
             </div>
 
-            <button type="submit" class="btn-submit">Đăng ký</button>
+            <div class="form-group">
+                <label asp-for="Password">
+                    <i class="bi bi-lock"></i>Mật khẩu
+                </label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="Tối thiểu 6 ký tự" autocomplete="new-password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
 
-            <p class="text-note">
+            <div class="form-group">
+                <label asp-for="ConfirmPassword">
+                    <i class="bi bi-lock-fill"></i>Xác nhận mật khẩu
+                </label>
+                <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Nhập lại mật khẩu" autocomplete="new-password" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="bi bi-person-check"></i>Đăng ký
+            </button>
+
+            <div class="divider">hoặc</div>
+
+            <p class="text-note mb-0">
                 Đã có tài khoản?
                 <a asp-action="Login">Đăng nhập ngay</a>
             </p>
-
-            @if (ViewBag.Error != null)
-            {
-                <p class="error">@ViewBag.Error</p>
-            }
         </form>
     </div>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,51 @@
+@model EventBookingWeb.Models.DomainModels.DBCategoryEvent
+@{
+    ViewData["Title"] = "Thêm danh mục";
+    Layout = "_AdminLayout";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-tag me-2"></i>Thêm danh mục mới</h5>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i>Quay lại
+                </a>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="CategoryEventName" class="form-label">Tên danh mục <span class="text-danger">*</span></label>
+                        <input asp-for="CategoryEventName" class="form-control" placeholder="Ví dụ: Âm nhạc, Thể thao, Hội nghị..." />
+                        <span asp-validation-for="CategoryEventName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="CategoryEventDescription" class="form-label">Mô tả</label>
+                        <textarea asp-for="CategoryEventDescription" class="form-control" rows="3" placeholder="Mô tả ngắn về danh mục (tùy chọn)"></textarea>
+                        <span asp-validation-for="CategoryEventDescription" class="text-danger"></span>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-x-lg me-1"></i>Hủy
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>Thêm danh mục
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

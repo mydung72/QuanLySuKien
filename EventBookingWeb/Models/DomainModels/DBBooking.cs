@@ -15,5 +15,6 @@ namespace EventBookingWeb.Models.DomainModels
         public DateTime BookingDate { get; set; }
         public DBUser? User { get; set; }
         public List<DBTicket>? Tickets { get; set; }
+        public DBEvent? Event { get; set; }
     }
 }

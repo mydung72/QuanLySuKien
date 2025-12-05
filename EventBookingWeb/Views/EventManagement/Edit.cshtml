@@ -1,0 +1,172 @@
+@using EventBookingWeb.Models.Enums
+@model EventBookingWeb.ViewModels.Event.EventCreateViewModel
+@{
+    ViewData["Title"] = "Chỉnh sửa sự kiện";
+    Layout = "_AdminLayout";
+    var categories = ViewBag.Categories as List<EventBookingWeb.Models.DomainModels.DBCategoryEvent> ?? new List<EventBookingWeb.Models.DomainModels.DBCategoryEvent>();
+}
+
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Sự kiện</a></li>
+            <li class="breadcrumb-item active">Chỉnh sửa</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Chỉnh sửa sự kiện</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="EventId" />
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Tên sự kiện <span class="text-danger">*</span></label>
+                        <input asp-for="Title" class="form-control" placeholder="Nhập tên sự kiện" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mô tả ngắn</label>
+                        <textarea asp-for="EventDescription" class="form-control" rows="3" placeholder="Mô tả ngắn gọn về sự kiện"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Nội dung chi tiết <span class="text-danger">*</span></label>
+                        <textarea asp-for="EventContentHtml" class="form-control" rows="6" placeholder="Nội dung chi tiết về sự kiện (hỗ trợ HTML)"></textarea>
+                        <span asp-validation-for="EventContentHtml" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Địa điểm <span class="text-danger">*</span></label>
+                            <input asp-for="Location" class="form-control" placeholder="Địa điểm tổ chức" />
+                            <span asp-validation-for="Location" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Danh mục</label>
+                            <select asp-for="SelectedCategoryIds" class="form-select" multiple>
+                                @foreach (var cat in categories)
+                                {
+                                    var isSelected = Model.SelectedCategoryIds?.Contains(cat.CategoryEventId) == true;
+                                    if (isSelected)
+                                    {
+                                        <option value="@cat.CategoryEventId" selected>@cat.CategoryEventName</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@cat.CategoryEventId">@cat.CategoryEventName</option>
+                                    }
+                                }
+                            </select>
+                            <small class="text-muted">Giữ Ctrl để chọn nhiều danh mục</small>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Ngày bắt đầu <span class="text-danger">*</span></label>
+                            <input asp-for="StartDate" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Ngày kết thúc <span class="text-danger">*</span></label>
+                            <input asp-for="EndDate" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Tổng số chỗ <span class="text-danger">*</span></label>
+                            <input asp-for="TotalSeats" type="number" class="form-control" min="1" />
+                            <span asp-validation-for="TotalSeats" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Giá vé (VNĐ) <span class="text-danger">*</span></label>
+                            <input asp-for="TicketPrice" type="number" class="form-control" min="0" step="1000" />
+                            <span asp-validation-for="TicketPrice" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Trạng thái</label>
+                            <select asp-for="EventStatus" class="form-select">
+                                <option value="@EventStatus.Upcoming" selected="@(Model.EventStatus == EventStatus.Upcoming)">Sắp diễn ra</option>
+                                <option value="@EventStatus.Ongoing" selected="@(Model.EventStatus == EventStatus.Ongoing)">Đang diễn ra</option>
+                                <option value="@EventStatus.Ended" selected="@(Model.EventStatus == EventStatus.Ended)">Đã kết thúc</option>
+                                <option value="@EventStatus.Cancelled" selected="@(Model.EventStatus == EventStatus.Cancelled)">Đã hủy</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Hình ảnh poster</label>
+                        <input asp-for="PosterImage" type="file" class="form-control" accept="image/*" onchange="previewImage(this)" />
+                        <small class="text-muted">Để trống nếu không muốn thay đổi hình ảnh</small>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.ExistingImageUrl))
+                    {
+                        <div class="mb-3">
+                            <label class="form-label">Hình ảnh hiện tại:</label>
+                            <div>
+                                <img src="@Model.ExistingImageUrl" alt="Current Image" class="img-thumbnail" style="max-height: 200px;">
+                            </div>
+                        </div>
+                    }
+
+                    <div id="imagePreview" class="mb-3" style="display: none;">
+                        <label class="form-label">Hình ảnh mới:</label>
+                        <div>
+                            <img id="preview" src="" alt="Preview" class="img-thumbnail" style="max-height: 200px;">
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Quay lại
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-2"></i>Lưu thay đổi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>Thông tin</h6>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-2"><strong>ID:</strong> @Model.EventId</p>
+                <p class="text-muted mb-0">Cập nhật thông tin sự kiện sẽ ảnh hưởng đến tất cả các đặt chỗ liên quan.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+}
+

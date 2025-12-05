@@ -2,8 +2,10 @@
 {
     public enum PaymentStatus
     {
-        Upcoming,
-        Ongoing,
-        Ended,
+        Pending,
+        Reserved,
+        Paid,
+        Cancelled,
+        Refunded
     }
 }

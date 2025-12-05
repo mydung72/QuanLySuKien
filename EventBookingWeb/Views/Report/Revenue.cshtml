@@ -1,0 +1,170 @@
+@model EventBookingWeb.ViewModels.Admin.ReportViewModel
+@{
+    ViewData["Title"] = "Báo cáo doanh thu";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1">Báo cáo doanh thu</h4>
+        <p class="text-muted mb-0">Thống kê doanh thu theo thời gian</p>
+    </div>
+    <a asp-action="ExportExcel" asp-route-startDate="@Model.StartDate?.ToString("yyyy-MM-dd")" asp-route-endDate="@Model.EndDate?.ToString("yyyy-MM-dd")" class="btn btn-success">
+        <i class="bi bi-file-earmark-excel me-2"></i>Xuất Excel
+    </a>
+</div>
+
+<!-- Filter -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" asp-action="Revenue" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label">Từ ngày</label>
+                <input type="date" name="startDate" class="form-control" value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Đến ngày</label>
+                <input type="date" name="endDate" class="form-control" value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-filter me-2"></i>Lọc
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card stat-card bg-gradient-primary">
+            <h5><i class="bi bi-currency-dollar me-2"></i>Tổng doanh thu</h5>
+            <h2>@Model.TotalRevenue.ToString("N0") đ</h2>
+            <i class="bi bi-graph-up-arrow"></i>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card bg-gradient-success">
+            <h5><i class="bi bi-ticket-perforated me-2"></i>Tổng đặt chỗ</h5>
+            <h2>@Model.TotalBookings</h2>
+            <i class="bi bi-ticket"></i>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card bg-gradient-info">
+            <h5><i class="bi bi-people me-2"></i>Tổng người tham dự</h5>
+            <h2>@Model.TotalAttendees</h2>
+            <i class="bi bi-person-check"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Revenue Chart -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-bar-chart me-2"></i>Biểu đồ doanh thu theo ngày</h5>
+    </div>
+    <div class="card-body">
+        @if (Model.RevenueByDate != null && Model.RevenueByDate.Any())
+        {
+            <canvas id="revenueChart" height="100"></canvas>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-graph-down display-1 text-muted"></i>
+                <p class="text-muted mt-3">Không có dữ liệu trong khoảng thời gian này</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Revenue Table -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-table me-2"></i>Chi tiết doanh thu theo ngày</h5>
+    </div>
+    <div class="card-body">
+        @if (Model.RevenueByDate != null && Model.RevenueByDate.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Ngày</th>
+                            <th class="text-end">Số đặt chỗ</th>
+                            <th class="text-end">Doanh thu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.RevenueByDate)
+                        {
+                            <tr>
+                                <td>@item.Date.ToString("dd/MM/yyyy")</td>
+                                <td class="text-end">@item.BookingCount</td>
+                                <td class="text-end"><strong class="text-primary">@item.Revenue.ToString("N0") đ</strong></td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-light">
+                            <td><strong>Tổng cộng</strong></td>
+                            <td class="text-end"><strong>@Model.RevenueByDate.Sum(r => r.BookingCount)</strong></td>
+                            <td class="text-end"><strong class="text-primary">@Model.RevenueByDate.Sum(r => r.Revenue).ToString("N0") đ</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-4">
+                <p class="text-muted mb-0">Không có dữ liệu</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    @if (Model.RevenueByDate != null && Model.RevenueByDate.Any())
+    {
+        <script>
+            var ctx = document.getElementById('revenueChart').getContext('2d');
+            var revenueChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [@Html.Raw(string.Join(",", Model.RevenueByDate.Select(r => $"'{r.Date:dd/MM}'")))],
+                    datasets: [{
+                        label: 'Doanh thu (VNĐ)',
+                        data: [@string.Join(",", Model.RevenueByDate.Select(r => r.Revenue))],
+                        backgroundColor: 'rgba(79, 70, 229, 0.8)',
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString('vi-VN') + ' đ';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+    }
+}
+

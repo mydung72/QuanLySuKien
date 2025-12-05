@@ -1,0 +1,90 @@
+@model IEnumerable<EventBookingWeb.Models.DomainModels.DBBanner>
+@{
+    ViewData["Title"] = "Quản lý Banner";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1">Quản lý Banner</h4>
+        <p class="text-muted mb-0">Tạo và quản lý các banner hiển thị trên trang chủ</p>
+    </div>
+    <a asp-action="CreateBanner" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-2"></i>Thêm banner
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        @if (Model != null && Model.Any())
+        {
+            <div class="row">
+                @foreach (var banner in Model)
+                {
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="position-relative">
+                                <img src="@banner.ImageUrl" alt="Banner" class="card-img-top" style="height: 180px; object-fit: cover;">
+                                @if (banner.IsActive)
+                                {
+                                    <span class="position-absolute top-0 end-0 m-2 badge bg-success">
+                                        <i class="bi bi-check-circle me-1"></i>Đang hiện
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="position-absolute top-0 end-0 m-2 badge bg-secondary">
+                                        <i class="bi bi-eye-slash me-1"></i>Đang ẩn
+                                    </span>
+                                }
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text small text-muted mb-2">
+                                    <i class="bi bi-calendar me-1"></i>@banner.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                                </p>
+                                @if (!string.IsNullOrEmpty(banner.LinkUrl))
+                                {
+                                    <p class="card-text small text-truncate mb-0">
+                                        <i class="bi bi-link-45deg me-1"></i>
+                                        <a href="@banner.LinkUrl" target="_blank" class="text-decoration-none">@banner.LinkUrl</a>
+                                    </p>
+                                }
+                                else
+                                {
+                                    <p class="card-text small text-muted mb-0">
+                                        <i class="bi bi-link-45deg me-1"></i>Không có liên kết
+                                    </p>
+                                }
+                            </div>
+                            <div class="card-footer bg-transparent border-top-0">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a asp-action="UpdateBanner" asp-route-id="@banner.BannerID" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil"></i> Sửa
+                                    </a>
+                                    <form asp-action="DeleteBanner" asp-route-id="@banner.BannerID" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa banner này?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i> Xóa
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-image display-1 text-muted"></i>
+                <h5 class="mt-3 text-muted">Chưa có banner nào</h5>
+                <p class="text-muted">Tạo banner đầu tiên để hiển thị trên trang chủ</p>
+                <a asp-action="CreateBanner" class="btn btn-primary mt-2">
+                    <i class="bi bi-plus-lg me-2"></i>Thêm banner
+                </a>
+            </div>
+        }
+    </div>
+</div>
+

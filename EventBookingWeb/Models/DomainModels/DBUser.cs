@@ -1,10 +1,14 @@
 ﻿using EventBookingWeb.Models.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace EventBookingWeb.Models.DomainModels
 {
     public class DBUser
     {
-        public required int UserId { get; set; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int UserId { get; set; }
         public string? FullName { get; set; }
         public required string Email { get; set; }
         public string PasswordHash { get; set; }

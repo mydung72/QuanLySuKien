@@ -1,0 +1,145 @@
+@model EventBookingWeb.ViewModels.Ticket.TicketViewModel
+@{
+    ViewData["Title"] = "Chi tiết vé";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Back Button -->
+            <a asp-action="MyTickets" class="btn btn-outline-secondary mb-4">
+                <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách vé
+            </a>
+
+            <!-- Ticket Card -->
+            <div class="card shadow ticket-detail-card">
+                <!-- Header -->
+                <div class="card-header bg-primary text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="bi bi-ticket-perforated me-2"></i>VÉ ĐIỆN TỬ</h4>
+                        <span class="badge bg-success fs-6"><i class="bi bi-check-circle me-1"></i>Hợp lệ</span>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <div class="row">
+                        <!-- Event Info -->
+                        <div class="col-md-7">
+                            <h3 class="text-primary mb-3">@Model.Event.Title</h3>
+                            
+                            <div class="mb-4">
+                                <div class="d-flex align-items-start mb-2">
+                                    <i class="bi bi-calendar-event text-muted me-3 fs-5"></i>
+                                    <div>
+                                        <strong>Thời gian</strong>
+                                        <p class="mb-0">@Model.Event.StartDate.ToString("dddd, dd/MM/yyyy")</p>
+                                        <p class="mb-0 text-muted">@Model.Event.StartDate.ToString("HH:mm") - @Model.Event.EndDate.ToString("HH:mm")</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex align-items-start mb-2">
+                                    <i class="bi bi-geo-alt text-muted me-3 fs-5"></i>
+                                    <div>
+                                        <strong>Địa điểm</strong>
+                                        <p class="mb-0">@Model.Event.Location</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <!-- Ticket Info -->
+                            <div class="ticket-info">
+                                <div class="row mb-2">
+                                    <div class="col-5 text-muted">Mã vé:</div>
+                                    <div class="col-7"><strong class="font-monospace text-primary fs-5">@Model.TicketCode</strong></div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-5 text-muted">Người đặt:</div>
+                                    <div class="col-7"><strong>@Model.User.FullName</strong></div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-5 text-muted">Email:</div>
+                                    <div class="col-7">@Model.User.Email</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-5 text-muted">Ngày mua:</div>
+                                    <div class="col-7">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- QR Code -->
+                        <div class="col-md-5 text-center">
+                            <div class="qr-code-container p-3 bg-white border rounded">
+                                <img src="data:image/png;base64,@Model.QRCodeBase64" alt="QR Code" class="img-fluid mb-2" style="max-width: 200px;">
+                                <p class="small text-muted mb-0">Quét mã QR để check-in</p>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <small class="text-muted d-block mb-2">Mã QR Data:</small>
+                                <code class="small">@Model.QRCodeData</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="card-footer bg-light">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div class="text-muted small">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Vui lòng xuất trình vé khi tham dự sự kiện
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button onclick="window.print()" class="btn btn-outline-primary">
+                                <i class="bi bi-printer me-1"></i> In vé
+                            </button>
+                            <a asp-action="Download" asp-route-id="@Model.TicketId" class="btn btn-primary">
+                                <i class="bi bi-download me-1"></i> Tải PDF
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Important Notes -->
+            <div class="card mt-4 border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Lưu ý quan trọng
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Mỗi vé chỉ được sử dụng một lần.</li>
+                        <li>Vui lòng mang theo CMND/CCCD khi tham dự sự kiện.</li>
+                        <li>Vé không được chuyển nhượng hoặc bán lại.</li>
+                        <li>Đến trước giờ sự kiện ít nhất 30 phút để làm thủ tục check-in.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .ticket-detail-card {
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    .qr-code-container {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    .font-monospace {
+        font-family: 'Courier New', monospace;
+    }
+    @@media print {
+        .btn, nav, footer, header {
+            display: none !important;
+        }
+        .card {
+            border: none !important;
+            box-shadow: none !important;
+        }
+    }
+</style>
+

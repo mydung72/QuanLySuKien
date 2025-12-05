@@ -17,12 +17,14 @@ namespace EventBookingWeb.Models.DomainModels
         public DbSet<DBBooking> Bookings { get; set; }
         public DbSet<DBBanner> Banners { get; set; }
         public DbSet<DBTicket> Tickets { get; set; }
+        public DbSet<DBCart> Carts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<DBUser>().HasKey(u => u.UserId); // Khóa chính
+            modelBuilder.Entity<DBUser>().Property(u => u.UserId).ValueGeneratedOnAdd();
             modelBuilder.Entity<DBUser>().Property(u => u.Role).IsRequired();
             modelBuilder.Entity<DBUser>().Property(u => u.Email).IsRequired();
             modelBuilder.Entity<DBUser>().HasIndex(u => u.Email).IsUnique();
@@ -72,6 +74,22 @@ namespace EventBookingWeb.Models.DomainModels
 
             modelBuilder.Entity<DBBanner>().HasKey(b => b.BannerID);
 
+            modelBuilder.Entity<DBCart>().HasKey(c => c.CartId);
+            modelBuilder.Entity<DBCart>().Property(c => c.UserId).IsRequired();
+            modelBuilder.Entity<DBCart>().Property(c => c.EventId).IsRequired();
+            modelBuilder.Entity<DBCart>().Property(c => c.Quantity).IsRequired();
+
+            modelBuilder.Entity<DBCart>()
+                .HasOne(c => c.User)
+                .WithMany()
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DBCart>()
+                .HasOne(c => c.Event)
+                .WithMany()
+                .HasForeignKey(c => c.EventId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<DBBooking>()
                 .HasOne(b => b.User)            // 1 Booking thuộc 1 User
@@ -90,6 +108,12 @@ namespace EventBookingWeb.Models.DomainModels
                 .WithMany(b => b.Tickets)
                 .HasForeignKey(t => t.BookingID)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DBBooking>()
+                .HasOne(b => b.Event)
+                .WithMany()
+                .HasForeignKey(b => b.EventId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<DBEvent>()
                 .HasMany(e => e.CategoryEvents)

@@ -5,5 +5,6 @@
         Upcoming,
         Ongoing,
         Ended,
+        Cancelled
     }
 }
