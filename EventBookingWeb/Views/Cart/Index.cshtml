@@ -48,11 +48,11 @@
                                         <div>
                                             <label class="form-label small text-muted mb-1">Số lượng</label>
                                             <div class="input-group input-group-sm" style="max-width: 130px;">
-                                                <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(@item.CartId, @item.Quantity - 1)">
+                                                <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(@item.CartId, - 1)">
                                                     <i class="bi bi-dash"></i>
                                                 </button>
                                                 <input type="number" class="form-control text-center" value="@item.Quantity" min="1" max="@item.AvailableSeats" id="qty_@item.CartId" readonly>
-                                                <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(@item.CartId, @item.Quantity + 1)">
+                                                <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(@item.CartId, 1)">
                                                     <i class="bi bi-plus"></i>
                                                 </button>
                                             </div>
@@ -84,7 +84,7 @@
             </div>
 
             <div class="col-lg-4">
-                <div class="card border-0 shadow-md sticky-top" style="top: 90px;">
+                <div class="card border-0 shadow-md sticky-top" style="top: 90px;z-index: 10">
                     <div class="card-body p-4">
                         <h5 class="card-title mb-4">
                             <i class="bi bi-receipt text-primary me-2"></i>Tổng kết đơn hàng
@@ -93,19 +93,22 @@
                         <div class="bg-light rounded p-3 mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="text-muted">Số lượng vé</span>
-                                <span class="fw-semibold">@Model.TotalItems vé</span>
+                                <span id="totalItems">@Model.TotalItems</span>vé
                             </div>
                             <hr class="my-2">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="fw-semibold">Tổng tiền</span>
-                                <span class="h4 mb-0 text-primary">@Model.TotalAmount.ToString("N0") VNĐ</span>
+                                <span id="totalAmount">@Model.TotalAmount.ToString("N0")</span>VNĐ
                             </div>
                         </div>
 
                         <div class="d-grid gap-2">
-                            <a asp-controller="Booking" asp-action="Create" class="btn btn-primary btn-lg" onclick="return confirm('Bạn có muốn đặt chỗ cho tất cả sự kiện trong giỏ hàng?');">
-                                <i class="bi bi-check-circle me-2"></i>Đặt chỗ ngay
-                            </a>
+                            <form asp-controller="Booking" asp-action="CheckoutFromCart" method="post" onsubmit="return confirm('Bạn có muốn đặt chỗ cho tất cả sự kiện trong giỏ hàng?');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-check-circle me-2"></i>Đặt chỗ ngay
+                                </button>
+                            </form>
                             <a asp-controller="Event" asp-action="Index" class="btn btn-outline-secondary">
                                 <i class="bi bi-arrow-left me-2"></i>Tiếp tục xem sự kiện
                             </a>
@@ -161,8 +164,12 @@
 
 @section Scripts {
     <script>
-        function updateQuantity(cartId, newQuantity) {
-            if (newQuantity < 1) {
+        function updateQuantity(cartId, change) {
+            const qtyInput = document.getElementById('qty_' + cartId);
+            let currentQty = parseInt(qtyInput.value);
+            let newQty = currentQty + change;
+
+            if (newQty < 1) {
                 removeItem(cartId);
                 return;
             }
@@ -172,26 +179,26 @@
                 type: 'POST',
                 data: {
                     cartId: cartId,
-                    quantity: newQuantity,
+                    quantity: newQty,
                     __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
                 },
-                success: function(response) {
+                success: function (response) {
                     if (response.success) {
-                        $('#qty_' + cartId).val(response.subTotal > 0 ? newQuantity : 0);
+                        qtyInput.value = newQty;
                         $('#subtotal_' + cartId).text(response.subTotal.toLocaleString('vi-VN'));
+                        $('#totalItems').text(response.totalItems);
+                        $('#totalAmount').text(response.totalAmount.toLocaleString('vi-VN'));
                         loadCartCount();
-                        if (response.cartCount === 0) {
-                            location.reload();
-                        }
                     } else {
                         alert(response.message);
                     }
-                },
-                error: function() {
-                    alert('Có lỗi xảy ra');
                 }
             });
         }
+
+
+
+
 
         function removeItem(cartId) {
             if (!confirm('Bạn có chắc muốn xóa sự kiện này khỏi giỏ hàng?')) {

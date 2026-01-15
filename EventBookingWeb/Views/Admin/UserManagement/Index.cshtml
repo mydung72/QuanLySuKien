@@ -101,27 +101,65 @@
                                 <td><span class="badge bg-@(user.Role == EventBookingWeb.Models.Enums.UserRole.Admin ? "danger" : "primary")">@user.Role</span></td>
                                 <td><span class="badge bg-@(user.UserStatus == EventBookingWeb.Models.Enums.UserStatus.Active ? "success" : "danger")">@user.UserStatus</span></td>
                                 <td>@user.CreatedAt.ToString("dd/MM/yyyy")</td>
-                                <td>
-                                    <a asp-action="Edit" asp-route-id="@user.UserId" class="btn btn-sm btn-warning">Sửa</a>
-                                    @if (user.UserStatus == EventBookingWeb.Models.Enums.UserStatus.Active)
-                                    {
-                                        <form asp-action="Lock" asp-route-id="@user.UserId" method="post" class="d-inline">
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+
+                                        <!-- Edit -->
+                                        <a asp-action="Edit"
+                                           asp-route-id="@user.UserId"
+                                           class="btn btn-sm btn-outline-primary"
+                                           title="Sửa">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+
+                                        <!-- Lock / Unlock -->
+                                        @if (user.UserStatus == EventBookingWeb.Models.Enums.UserStatus.Active)
+                                        {
+                                            <form asp-action="Lock"
+                                                  asp-route-id="@user.UserId"
+                                                  method="post"
+                                                  class="d-inline"
+                                                  onsubmit="return confirm('Bạn có chắc muốn khóa tài khoản này?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-outline-secondary"
+                                                        title="Khóa">
+                                                    <i class="bi bi-lock-fill"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="Unlock"
+                                                  asp-route-id="@user.UserId"
+                                                  method="post"
+                                                  class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-outline-success"
+                                                        title="Mở khóa">
+                                                    <i class="bi bi-unlock-fill"></i>
+                                                </button>
+                                            </form>
+                                        }
+
+                                        <!-- Delete -->
+                                        <form asp-action="Delete"
+                                              asp-route-id="@user.UserId"
+                                              method="post"
+                                              class="d-inline"
+                                              onsubmit="return confirm('Bạn có chắc muốn xóa người dùng này?');">
                                             @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-sm btn-secondary" onclick="return confirm('Bạn có chắc muốn khóa tài khoản này?');">Khóa</button>
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    title="Xóa">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
                                         </form>
-                                    }
-                                    else
-                                    {
-                                        <form asp-action="Unlock" asp-route-id="@user.UserId" method="post" class="d-inline">
-                                            @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-sm btn-success">Mở khóa</button>
-                                        </form>
-                                    }
-                                    <form asp-action="Delete" asp-route-id="@user.UserId" method="post" class="d-inline">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa người dùng này?');">Xóa</button>
-                                    </form>
+
+                                    </div>
                                 </td>
+
                             </tr>
                         }
                     </tbody>

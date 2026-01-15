@@ -23,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\uploads\events\" />
     <Folder Include="wwwroot\uploads\banners\" />
     <Folder Include="wwwroot\uploads\news\" />
   </ItemGroup>

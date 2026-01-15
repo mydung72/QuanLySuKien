@@ -377,6 +377,90 @@ namespace EventBookingWeb.Controllers
                 return RedirectToAction("MyBookings");
             }
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CheckoutFromCart()
+        {
+            try
+            {
+                var userId = int.Parse(HttpContext.Session.GetString("UserId") ?? "0");
+                
+                // Get all cart items
+                var cartItems = await _context.Carts
+                    .Include(c => c.Event)
+                    .Where(c => c.UserId == userId)
+                    .ToListAsync();
+
+                if (!cartItems.Any())
+                {
+                    TempData["Error"] = "Giỏ hàng trống";
+                    return RedirectToAction("Index", "Cart");
+                }
+
+                var user = await _context.Users.FindAsync(userId);
+                var createdBookings = new List<int>();
+
+                // Create booking for each cart item
+                foreach (var cartItem in cartItems)
+                {
+                    if (cartItem.Event == null)
+                        continue;
+
+                    // Check available seats
+                    if (cartItem.Event.AvailableSeats < cartItem.Quantity)
+                    {
+                        TempData["Error"] = $"Không đủ chỗ trống cho sự kiện '{cartItem.Event.Title}'";
+                        return RedirectToAction("Index", "Cart");
+                    }
+
+                    // Create booking
+                    var booking = new DBBooking
+                    {
+                        BookingId = 0,
+                        EventId = cartItem.EventId,
+                        UserId = userId,
+                        Quantity = cartItem.Quantity,
+                        TotalAmount = (decimal)(cartItem.Quantity * cartItem.Event.TicketPrice),
+                        PaymentStatus = PaymentStatus.Pending,
+                        PaymentMethod = "Pending",
+                        BookingDate = DateTime.Now
+                    };
+
+                    _context.Bookings.Add(booking);
+                    cartItem.Event.AvailableSeats -= cartItem.Quantity;
+                    
+                    await _context.SaveChangesAsync();
+                    createdBookings.Add(booking.BookingId);
+
+                    // Send booking confirmation email
+                    if (user != null)
+                    {
+                        await _emailService.SendBookingConfirmationAsync(
+                            user.Email,
+                            user.FullName ?? "",
+                            cartItem.Event.Title,
+                            booking.BookingId.ToString(),
+                            cartItem.Event.StartDate,
+                            booking.Quantity,
+                            booking.TotalAmount);
+                    }
+                }
+
+                // Clear cart after successful bookings
+                _context.Carts.RemoveRange(cartItems);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = $"Đã tạo {createdBookings.Count} đơn đặt chỗ thành công";
+                return RedirectToAction("MyBookings");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error checking out from cart: {ex.Message}");
+                TempData["Error"] = "Có lỗi xảy ra. Vui lòng thử lại.";
+                return RedirectToAction("Index", "Cart");
+            }
+        }
     }
 }
 

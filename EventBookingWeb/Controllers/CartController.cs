@@ -124,6 +124,7 @@ namespace EventBookingWeb.Controllers
             try
             {
                 var userId = int.Parse(HttpContext.Session.GetString("UserId") ?? "0");
+
                 var cartItem = await _context.Carts
                     .Include(c => c.Event)
                     .FirstOrDefaultAsync(c => c.CartId == cartId && c.UserId == userId);
@@ -143,19 +144,36 @@ namespace EventBookingWeb.Controllers
                     {
                         return Json(new { success = false, message = "Không đủ chỗ trống" });
                     }
+
                     cartItem.Quantity = quantity;
                     cartItem.UpdatedAt = DateTime.Now;
                 }
 
                 await _context.SaveChangesAsync();
 
-                var cartCount = await _context.Carts
+                // 🔥 LẤY GIỎ HÀNG SAU KHI UPDATE
+                var cartItems = await _context.Carts
+                    .Include(c => c.Event)
                     .Where(c => c.UserId == userId)
-                    .SumAsync(c => c.Quantity);
+                    .ToListAsync();
 
-                var subTotal = cartItem.Event != null ? (decimal)(quantity * cartItem.Event.TicketPrice) : 0;
+                var totalItems = cartItems.Sum(c => c.Quantity);
+                var totalAmount = cartItems.Sum(c =>
+                    c.Event != null ? c.Quantity * c.Event.TicketPrice : 0
+                );
 
-                return Json(new { success = true, cartCount, subTotal });
+                var subTotal = cartItem.Event != null
+                    ? quantity * cartItem.Event.TicketPrice
+                    : 0;
+
+                return Json(new
+                {
+                    success = true,
+                    cartCount = totalItems,
+                    subTotal,
+                    totalItems,
+                    totalAmount
+                });
             }
             catch (Exception ex)
             {
@@ -163,6 +181,7 @@ namespace EventBookingWeb.Controllers
                 return Json(new { success = false, message = "Có lỗi xảy ra" });
             }
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

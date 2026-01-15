@@ -1,5 +1,6 @@
 @using EventBookingWeb.Models.Enums
 @model IEnumerable<EventBookingWeb.Models.DomainModels.DBEvent>
+
 @{
     ViewData["Title"] = "Quản lý sự kiện";
     Layout = "_AdminLayout";
@@ -38,13 +39,16 @@
                         {
                             <tr>
                                 <td>
-                                    <img src="@e.ImageUrl" alt="@e.Title" class="rounded" style="width: 60px; height: 45px; object-fit: cover;">
+                                    <img src="@e.ImageUrl" alt="@e.Title" class="rounded"
+                                         style="width: 60px; height: 45px; object-fit: cover;">
                                 </td>
+
                                 <td>
                                     <strong>@e.Title</strong>
-                                    <br>
+                                    <br />
                                     <small class="text-muted"><i class="bi bi-geo-alt"></i> @e.Location</small>
                                 </td>
+
                                 <td>
                                     @if (e.CategoryEvents != null && e.CategoryEvents.Any())
                                     {
@@ -58,19 +62,25 @@
                                         <span class="text-muted">-</span>
                                     }
                                 </td>
+
                                 <td>
                                     <i class="bi bi-calendar3 text-muted"></i> @e.StartDate.ToString("dd/MM/yyyy")
-                                    <br>
-                                    <small class="text-muted">@e.StartDate.ToString("HH:mm") - @e.EndDate.ToString("HH:mm")</small>
+                                    <br />
+                                    <small class="text-muted">
+                                        @e.StartDate.ToString("HH:mm") - @e.EndDate.ToString("HH:mm")
+                                    </small>
                                 </td>
+
                                 <td>
                                     <strong class="text-primary">@e.TicketPrice.ToString("N0") đ</strong>
                                 </td>
+
                                 <td>
                                     <span class="@(e.AvailableSeats <= 10 ? "text-danger" : "text-success")">
                                         @e.AvailableSeats / @e.TotalSeats
                                     </span>
                                 </td>
+
                                 <td>
                                     @{
                                         var statusClass = e.EventStatus switch
@@ -81,6 +91,7 @@
                                             EventStatus.Cancelled => "bg-danger",
                                             _ => "bg-secondary"
                                         };
+
                                         var statusText = e.EventStatus switch
                                         {
                                             EventStatus.Upcoming => "Sắp diễn ra",
@@ -92,15 +103,28 @@
                                     }
                                     <span class="badge @statusClass">@statusText</span>
                                 </td>
+
                                 <td class="text-center">
                                     <div class="btn-group" role="group">
-                                        <a asp-action="Edit" asp-route-id="@e.EventId" class="btn btn-sm btn-outline-primary" title="Sửa">
+                                        <a asp-action="Edit"
+                                           asp-route-id="@e.EventId"
+                                           class="btn btn-sm btn-outline-primary"
+                                           title="Sửa">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#statusModal-@e.EventId" title="Đổi trạng thái">
+
+                                        <!-- Button mở modal -->
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-info"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#statusModal-@e.EventId"
+                                                title="Đổi trạng thái">
                                             <i class="bi bi-toggle-on"></i>
                                         </button>
-                                        <form asp-action="Delete" asp-route-id="@e.EventId" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa sự kiện này?');">
+
+                                        <form asp-action="Delete" asp-route-id="@e.EventId"
+                                              method="post" class="d-inline"
+                                              onsubmit="return confirm('Bạn có chắc muốn xóa sự kiện này?');">
                                             @Html.AntiForgeryToken()
                                             <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa">
                                                 <i class="bi bi-trash"></i>
@@ -109,34 +133,6 @@
                                     </div>
                                 </td>
                             </tr>
-
-                            <!-- Status Modal -->
-                            <div class="modal fade" id="statusModal-@e.EventId" tabindex="-1">
-                                <div class="modal-dialog modal-sm">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Cập nhật trạng thái</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                        </div>
-                                        <form asp-action="UpdateStatus" method="post">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="id" value="@e.EventId" />
-                                            <div class="modal-body">
-                                                <select name="status" class="form-select">
-                                                    <option value="@EventStatus.Upcoming" selected="@(e.EventStatus == EventStatus.Upcoming)">Sắp diễn ra</option>
-                                                    <option value="@EventStatus.Ongoing" selected="@(e.EventStatus == EventStatus.Ongoing)">Đang diễn ra</option>
-                                                    <option value="@EventStatus.Ended" selected="@(e.EventStatus == EventStatus.Ended)">Đã kết thúc</option>
-                                                    <option value="@EventStatus.Cancelled" selected="@(e.EventStatus == EventStatus.Cancelled)">Đã hủy</option>
-                                                </select>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                                                <button type="submit" class="btn btn-primary">Lưu</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
                         }
                     </tbody>
                 </table>
@@ -156,3 +152,56 @@
     </div>
 </div>
 
+<!-- ========================================== -->
+<!--  ALL MODALS ĐƯỢC ĐƯA RA KHỎI TABLE  -->
+<!-- ========================================== -->
+@foreach (var e in Model)
+{
+    <div class="modal fade" id="statusModal-@e.EventId" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Cập nhật trạng thái</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <form asp-action="UpdateStatus" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" name="id" value="@e.EventId" />
+
+                    <div class="modal-body">
+                        <select name="status" class="form-select">
+                            <option value="@EventStatus.Upcoming"
+                                    selected="@(e.EventStatus == EventStatus.Upcoming)">
+                                Sắp diễn ra
+                            </option>
+
+                            <option value="@EventStatus.Ongoing"
+                                    selected="@(e.EventStatus == EventStatus.Ongoing)">
+                                Đang diễn ra
+                            </option>
+
+                            <option value="@EventStatus.Ended"
+                                    selected="@(e.EventStatus == EventStatus.Ended)">
+                                Đã kết thúc
+                            </option>
+
+                            <option value="@EventStatus.Cancelled"
+                                    selected="@(e.EventStatus == EventStatus.Cancelled)">
+                                Đã hủy
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+}
