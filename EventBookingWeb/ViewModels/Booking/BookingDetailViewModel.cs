@@ -16,6 +16,8 @@ namespace EventBookingWeb.ViewModels.Booking
         public List<DBTicket> Tickets { get; set; } = new();
         public bool CanCancel { get; set; }
         public bool CanViewTickets { get; set; }
+        public string BookingCode { get; set; } = string.Empty;
+        public string QRCodeBase64 { get; set; } = string.Empty;
     }
 }
 

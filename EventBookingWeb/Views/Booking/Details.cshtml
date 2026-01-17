@@ -197,18 +197,31 @@
                         </div>
                     </div>
 
+                    <!-- Booking Code with QR -->
                     <div class="bg-light rounded p-3 mb-3">
-                        <div class="small text-muted mb-1">Phương thức thanh toán</div>
-                        <div class="fw-semibold">@(!string.IsNullOrEmpty(Model.PaymentMethod) ? Model.PaymentMethod : "Chưa thanh toán")</div>
+                        <div class="small text-muted mb-2">Mã đặt chỗ</div>
+                        <div class="text-center">
+                            <img src="data:image/png;base64,@Model.QRCodeBase64" alt="QR Code" class="img-fluid mb-3" style="max-width: 200px;" />
+                            <div class="fw-bold fs-4 text-primary mb-2">@Model.BookingCode</div>
+                            <small class="text-muted d-block">Quét mã QR hoặc xuất trình mã này tại sự kiện</small>
+                        </div>
                     </div>
 
                     <div class="bg-light rounded p-3 mb-3">
-                        <div class="small text-muted mb-1">Trạng thái</div>
-                        <span class="badge bg-@(Model.PaymentStatus == EventBookingWeb.Models.Enums.PaymentStatus.Paid ? "success" : 
-                            Model.PaymentStatus == EventBookingWeb.Models.Enums.PaymentStatus.Pending ? "warning" : 
-                            Model.PaymentStatus == EventBookingWeb.Models.Enums.PaymentStatus.Cancelled ? "danger" : "info") px-3 py-2">
-                            @Model.PaymentStatus
-                        </span>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="small text-muted mb-1">Phương thức thanh toán</div>
+                                <div class="fw-semibold">@(!string.IsNullOrEmpty(Model.PaymentMethod) ? Model.PaymentMethod : "Chưa thanh toán")</div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="small text-muted mb-1">Trạng thái</div>
+                                <span class="badge bg-@(Model.PaymentStatus == EventBookingWeb.Models.Enums.PaymentStatus.Paid ? "success" : 
+                                    Model.PaymentStatus == EventBookingWeb.Models.Enums.PaymentStatus.Pending ? "warning" : 
+                                    Model.PaymentStatus == EventBookingWeb.Models.Enums.PaymentStatus.Cancelled ? "danger" : "info") px-3 py-2">
+                                    @Model.PaymentStatus
+                                </span>
+                            </div>
+                        </div>
                     </div>
 
                     @if (Model.CanCancel)
@@ -217,7 +230,7 @@
                             <form asp-controller="Booking" asp-action="Cancel" asp-route-id="@Model.BookingId" method="post" 
                                   onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn đặt chỗ này?');">
                                 @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-outline-danger w-100">
+                                <button type="submit" class="btn btn-danger w-100">
                                     <i class="bi bi-x-circle me-2"></i>Hủy đặt chỗ
                                 </button>
                             </form>

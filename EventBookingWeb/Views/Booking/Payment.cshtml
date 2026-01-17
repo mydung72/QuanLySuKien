@@ -21,26 +21,21 @@
                     </div>
 
                     <form asp-action="ProcessPayment" method="post">
+                        @Html.AntiForgeryToken()
                         <input type="hidden" asp-for="BookingId" />
                         <input type="hidden" asp-for="Amount" />
+                        <input type="hidden" name="PaymentMethod" value="Cash" />
 
-                        <div class="mb-3">
-                            <label class="form-label">Chọn phương thức thanh toán</label>
-                            <div class="list-group">
-                                <label class="list-group-item">
-                                    <input class="form-check-input me-1" type="radio" name="PaymentMethod" value="VNPay" checked>
-                                    <strong>VNPay</strong> - Thanh toán qua cổng VNPay
-                                </label>
-                                <label class="list-group-item">
-                                    <input class="form-check-input me-1" type="radio" name="PaymentMethod" value="Cash">
-                                    <strong>Tiền mặt</strong> - Thanh toán trực tiếp tại sự kiện
-                                </label>
-                            </div>
-                            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                        <div class="alert alert-info mb-4">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Thanh toán trực tiếp tại sự kiện</strong>
+                            <p class="mb-0 mt-2 small">Vui lòng thanh toán bằng tiền mặt khi đến tham dự sự kiện. Mang theo mã đặt chỗ để xác nhận.</p>
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-success btn-lg">Thanh toán</button>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle me-2"></i>Xác nhận đặt chỗ
+                            </button>
                             <a asp-action="Details" asp-route-id="@Model.BookingId" class="btn btn-secondary">Quay lại</a>
                         </div>
                     </form>

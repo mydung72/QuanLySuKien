@@ -1,6 +1,7 @@
-using EventBookingWeb.Models;
+﻿using EventBookingWeb.Models;
 using EventBookingWeb.Models.DomainModels;
 using EventBookingWeb.Models.Enums;
+using EventBookingWeb.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -67,6 +68,61 @@ namespace EventBookingWeb.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+        public IActionResult Profile()
+        {
+            var userIdString = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            int userId = int.Parse(userIdString);
+
+            var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var model = new UserProfileViewModel
+            {
+                UserId = user.UserId,
+                FullName = user.FullName,
+                Email = user.Email,
+                Phone = user.Phone,
+                Role = user.Role.ToString(),
+                UserStatus = user.UserStatus.ToString(),
+                CreatedAt = user.CreatedAt
+            };
+
+            return View(model);
+        }
+        [HttpPost]
+        public IActionResult Profile(UserProfileViewModel model)
+        {
+            var userIdString = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            int userId = int.Parse(userIdString);
+
+            var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // ✅ Chỉ cập nhật các field cho phép sửa
+            user.FullName = model.FullName;
+            user.Phone = model.Phone;
+
+            _context.SaveChanges();
+
+            TempData["Success"] = "Cập nhật thông tin thành công!";
+            return RedirectToAction("Profile");
         }
     }
 }

@@ -193,6 +193,19 @@
                     @if (Model.IsLoggedIn)
                     {
                         <div class="d-grid gap-2">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Số lượng vé</label>
+                                <div class="input-group" style="max-width: 200px;">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="changeQuantity(-1)">
+                                        <i class="bi bi-dash"></i>
+                                    </button>
+                                    <input type="number" class="form-control text-center" id="eventQuantity" value="1" min="1" max="@Model.Event.AvailableSeats" style="line-height: 1.5;">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="changeQuantity(1)">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
+                                <small class="text-muted">Tối đa @Model.Event.AvailableSeats vé</small>
+                            </div>
                             <button onclick="addToCart(@Model.Event.EventId)" class="btn btn-outline-primary">
                                 <i class="bi bi-cart-plus me-2"></i>Thêm vào giỏ
                             </button>
@@ -270,13 +283,30 @@
 
 @section Scripts {
     <script>
+        function changeQuantity(change) {
+            const qtyInput = document.getElementById('eventQuantity');
+            let currentQty = parseInt(qtyInput.value) || 1;
+            let newQty = currentQty + change;
+            const maxQty = parseInt(qtyInput.max) || @Model.Event.AvailableSeats;
+            
+            if (newQty < 1) {
+                newQty = 1;
+            } else if (newQty > maxQty) {
+                newQty = maxQty;
+            }
+            
+            qtyInput.value = newQty;
+        }
+
         function addToCart(eventId) {
+            const quantity = parseInt(document.getElementById('eventQuantity').value) || 1;
+            
             $.ajax({
                 url: '@Url.Action("Add", "Cart")',
                 type: 'POST',
                 data: {
                     eventId: eventId,
-                    quantity: 1,
+                    quantity: quantity,
                     __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
                 },
                 success: function(response) {

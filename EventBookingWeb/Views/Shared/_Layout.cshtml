@@ -85,7 +85,7 @@
                                         <div class="fw-semibold">@(username ?? email)</div>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Thông tin cá nhân</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Home" asp-action="Profile"><i class="bi bi-person"></i> Thông tin cá nhân  </a></li>
                                     <li><a class="dropdown-item" asp-controller="Booking" asp-action="MyBookings"><i class="bi bi-clock-history me-2"></i>Lịch sử đặt chỗ</a></li>
                                     <li><a class="dropdown-item" asp-controller="Ticket" asp-action="MyTickets"><i class="bi bi-ticket-perforated me-2"></i>Vé của tôi</a></li>
                                     @if (role == "Admin")

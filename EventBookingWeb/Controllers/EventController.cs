@@ -61,26 +61,31 @@ namespace EventBookingWeb.Controllers
                     _ => query.OrderBy(e => e.StartDate)
                 };
 
-                var pageSize = 12;
-                var totalCount = await query.CountAsync();
-                var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-
-                var events = await query
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize)
+                // Separate upcoming and past events
+                var now = DateTime.Now;
+                var upcomingEvents = await query
+                    .Where(e => e.StartDate > now)
+                    .OrderBy(e => e.StartDate)
+                    .ToListAsync();
+                
+                var pastEvents = await query
+                    .Where(e => e.StartDate <= now)
+                    .OrderByDescending(e => e.StartDate)
                     .ToListAsync();
 
                 var viewModel = new EventListViewModel
                 {
-                    Events = events,
+                    Events = upcomingEvents.Concat(pastEvents).ToList(),
                     Filter = filter,
                     CurrentPage = page,
-                    TotalPages = totalPages,
-                    PageSize = pageSize,
-                    TotalCount = totalCount
+                    TotalPages = 1,
+                    PageSize = 1000,
+                    TotalCount = upcomingEvents.Count + pastEvents.Count
                 };
 
                 ViewBag.Categories = await _context.CategoryEvents.ToListAsync();
+                ViewBag.UpcomingEvents = upcomingEvents;
+                ViewBag.PastEvents = pastEvents;
                 return View(viewModel);
             }
             catch (Exception ex)

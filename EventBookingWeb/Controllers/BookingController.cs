@@ -177,6 +177,10 @@ namespace EventBookingWeb.Controllers
             if (booking == null)
                 return NotFound();
 
+            // Generate booking code and QR code
+            var bookingCode = $"BK{booking.BookingId:D6}";
+            var qrCodeBase64 = _qrCodeService.GenerateQRCode(bookingCode);
+
             var viewModel = new BookingDetailViewModel
             {
                 BookingId = booking.BookingId,
@@ -191,7 +195,9 @@ namespace EventBookingWeb.Controllers
                 CanCancel = booking.PaymentStatus != PaymentStatus.Cancelled && 
                            booking.PaymentStatus != PaymentStatus.Refunded &&
                            booking.Event.StartDate > DateTime.Now,
-                CanViewTickets = booking.PaymentStatus == PaymentStatus.Paid
+                CanViewTickets = booking.PaymentStatus == PaymentStatus.Paid,
+                BookingCode = bookingCode,
+                QRCodeBase64 = qrCodeBase64
             };
 
             return View(viewModel);
@@ -271,31 +277,16 @@ namespace EventBookingWeb.Controllers
         {
             try
             {
-                if (model.PaymentMethod == "VNPay")
+                var booking = await _context.Bookings.FindAsync(model.BookingId);
+                if (booking != null)
                 {
-                    var returnUrl = Url.Action("PaymentCallback", "Booking", null, Request.Scheme);
-                    var paymentUrl = _paymentService.CreatePaymentUrl(
-                        model.BookingId,
-                        model.Amount,
-                        $"Thanh toán đặt chỗ #{model.BookingId}",
-                        returnUrl ?? "");
-                    
-                    return Redirect(paymentUrl);
-                }
-                else if (model.PaymentMethod == "Cash")
-                {
-                    var booking = await _context.Bookings.FindAsync(model.BookingId);
-                    if (booking != null)
-                    {
-                        booking.PaymentStatus = PaymentStatus.Reserved;
-                        booking.PaymentMethod = "Cash";
-                        await _context.SaveChangesAsync();
-                    }
-
-                    return RedirectToAction("Details", new { id = model.BookingId });
+                    booking.PaymentStatus = PaymentStatus.Reserved;
+                    booking.PaymentMethod = "Tiền mặt";
+                    await _context.SaveChangesAsync();
                 }
 
-                return RedirectToAction("Payment", new { bookingId = model.BookingId });
+                TempData["Success"] = "Đặt chỗ thành công! Vui lòng thanh toán tại sự kiện.";
+                return RedirectToAction("Details", new { id = model.BookingId });
             }
             catch (Exception ex)
             {
@@ -380,28 +371,33 @@ namespace EventBookingWeb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CheckoutFromCart()
+        public async Task<IActionResult> CheckoutFromCart(List<int> cartIds)
         {
             try
             {
                 var userId = int.Parse(HttpContext.Session.GetString("UserId") ?? "0");
                 
-                // Get all cart items
-                var cartItems = await _context.Carts
-                    .Include(c => c.Event)
-                    .Where(c => c.UserId == userId)
-                    .ToListAsync();
+                // If no cartIds provided, get all cart items (backward compatibility)
+                var cartItems = cartIds != null && cartIds.Any()
+                    ? await _context.Carts
+                        .Include(c => c.Event)
+                        .Where(c => c.UserId == userId && cartIds.Contains(c.CartId))
+                        .ToListAsync()
+                    : await _context.Carts
+                        .Include(c => c.Event)
+                        .Where(c => c.UserId == userId)
+                        .ToListAsync();
 
                 if (!cartItems.Any())
                 {
-                    TempData["Error"] = "Giỏ hàng trống";
+                    TempData["Error"] = "Vui lòng chọn ít nhất một sự kiện để đặt chỗ";
                     return RedirectToAction("Index", "Cart");
                 }
 
                 var user = await _context.Users.FindAsync(userId);
                 var createdBookings = new List<int>();
 
-                // Create booking for each cart item
+                // Create booking for each selected cart item
                 foreach (var cartItem in cartItems)
                 {
                     if (cartItem.Event == null)
@@ -422,8 +418,8 @@ namespace EventBookingWeb.Controllers
                         UserId = userId,
                         Quantity = cartItem.Quantity,
                         TotalAmount = (decimal)(cartItem.Quantity * cartItem.Event.TicketPrice),
-                        PaymentStatus = PaymentStatus.Pending,
-                        PaymentMethod = "Pending",
+                        PaymentStatus = PaymentStatus.Reserved,
+                        PaymentMethod = "Tiền mặt",
                         BookingDate = DateTime.Now
                     };
 
@@ -447,7 +443,7 @@ namespace EventBookingWeb.Controllers
                     }
                 }
 
-                // Clear cart after successful bookings
+                // Remove only selected cart items after successful bookings
                 _context.Carts.RemoveRange(cartItems);
                 await _context.SaveChangesAsync();
 

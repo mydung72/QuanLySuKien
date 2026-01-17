@@ -27,52 +27,7 @@ namespace EventBookingWeb.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> MyTickets(int page = 1)
-        {
-            try
-            {
-                var userId = int.Parse(HttpContext.Session.GetString("UserId") ?? "0");
-                
-                var query = _context.Tickets
-                    .Include(t => t.Booking)
-                        .ThenInclude(b => b.Event)
-                    .Where(t => t.UserID == userId);
-
-                var pageSize = 10;
-                var totalCount = await query.CountAsync();
-                var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-
-                var tickets = await query
-                    .OrderByDescending(t => t.CreatedAt)
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToListAsync();
-
-                var viewModel = new TicketListViewModel
-                {
-                    Tickets = tickets.Select(t => new TicketItemViewModel
-                    {
-                        TicketId = t.TicketId,
-                        TicketCode = t.TicketCode,
-                        EventTitle = t.Booking?.Event?.Title ?? "",
-                        EventImageUrl = t.Booking?.Event?.ImageUrl ?? "",
-                        EventStartDate = t.Booking?.Event?.StartDate ?? DateTime.Now,
-                        CreatedAt = t.CreatedAt
-                    }).ToList(),
-                    CurrentPage = page,
-                    TotalPages = totalPages,
-                    PageSize = pageSize
-                };
-
-                return View(viewModel);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error loading tickets: {ex.Message}");
-                return View(new TicketListViewModel());
-            }
-        }
-
+       
         public async Task<IActionResult> Details(int id)
         {
             try

@@ -16,12 +16,27 @@
     {
         <div class="row g-4">
             <div class="col-lg-8">
+                <div id="bulkActions" class="mb-3" style="display: none;">
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="selectAll()">
+                        <i class="bi bi-check-square me-1"></i>Chọn tất cả
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deselectAll()">
+                        <i class="bi bi-square me-1"></i>Bỏ chọn tất cả
+                    </button>
+                </div>
                 @foreach (var item in Model.Items)
                 {
                     <div class="card border-0 shadow-sm mb-3">
                         <div class="card-body p-3">
                             <div class="row g-3">
-                                <div class="col-md-3">
+                                <div class="col-md-1 d-flex align-items-start pt-2">
+                                    <input type="checkbox" class="form-check-input cart-checkbox" value="@item.CartId" id="cart_@item.CartId" 
+                                           data-quantity="@item.Quantity" 
+                                           data-subtotal="@item.SubTotal"
+                                           onchange="updateBulkActions()" 
+                                           style="width: 20px; height: 20px; cursor: pointer;">
+                                </div>
+                                <div class="col-md-2">
                                     <div class="position-relative" style="border-radius: var(--radius-lg); overflow: hidden; height: 140px;">
                                         <img src="@item.EventImageUrl" class="img-fluid w-100 h-100" alt="@item.EventTitle" style="object-fit: cover;">
                                     </div>
@@ -51,7 +66,7 @@
                                                 <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(@item.CartId, - 1)">
                                                     <i class="bi bi-dash"></i>
                                                 </button>
-                                                <input type="number" class="form-control text-center" value="@item.Quantity" min="1" max="@item.AvailableSeats" id="qty_@item.CartId" readonly>
+                                                <input type="number" class="form-control text-center" value="@item.Quantity" min="1" max="@item.AvailableSeats" id="qty_@item.CartId" readonly style="line-height: 1.5; padding: 0.25rem 0.5rem;">
                                                 <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(@item.CartId, 1)">
                                                     <i class="bi bi-plus"></i>
                                                 </button>
@@ -62,7 +77,7 @@
                                                 <div class="small text-muted">Tổng tiền</div>
                                                 <div class="h5 mb-0 text-primary"><span id="subtotal_@item.CartId">@item.SubTotal.ToString("N0")</span> VNĐ</div>
                                             </div>
-                                            <button class="btn btn-sm btn-outline-danger" onclick="removeItem(@item.CartId)">
+                                            <button class="btn btn-sm btn-danger" onclick="removeItem(@item.CartId)">
                                                 <i class="bi bi-trash me-1"></i>Xóa
                                             </button>
                                         </div>
@@ -76,7 +91,7 @@
                 <div class="text-end mb-3">
                     <form asp-action="Clear" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa tất cả sự kiện?');" class="d-inline">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                        <button type="submit" class="btn btn-sm btn-danger">
                             <i class="bi bi-trash me-1"></i>Xóa tất cả
                         </button>
                     </form>
@@ -93,23 +108,23 @@
                         <div class="bg-light rounded p-3 mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="text-muted">Số lượng vé</span>
-                                <span id="totalItems">@Model.TotalItems</span>vé
+                                <span id="totalItems">0</span>vé
                             </div>
                             <hr class="my-2">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="fw-semibold">Tổng tiền</span>
-                                <span id="totalAmount">@Model.TotalAmount.ToString("N0")</span>VNĐ
+                                <span id="totalAmount">0</span>VNĐ
                             </div>
                         </div>
 
                         <div class="d-grid gap-2">
-                            <form asp-controller="Booking" asp-action="CheckoutFromCart" method="post" onsubmit="return confirm('Bạn có muốn đặt chỗ cho tất cả sự kiện trong giỏ hàng?');">
+                            <form id="checkoutForm" asp-controller="Booking" asp-action="CheckoutFromCart" method="post" onsubmit="return validateAndSubmit();">
                                 @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-primary btn-lg">
-                                    <i class="bi bi-check-circle me-2"></i>Đặt chỗ ngay
+                                <button type="submit" id="checkoutButton" class="btn btn-primary btn-lg w-100" disabled>
+                                    <i class="bi bi-check-circle me-2"></i>Đặt chỗ
                                 </button>
                             </form>
-                            <a asp-controller="Event" asp-action="Index" class="btn btn-outline-secondary">
+                            <a asp-controller="Event" asp-action="Index" class="btn btn-outline-secondary w-100">
                                 <i class="bi bi-arrow-left me-2"></i>Tiếp tục xem sự kiện
                             </a>
                         </div>
@@ -160,6 +175,16 @@
     .text-danger {
         color: #ef4444 !important;
     }
+    
+    .input-group input[type="number"] {
+        text-align: center !important;
+        font-weight: 600;
+    }
+    
+    .input-group input[type="number"]::-webkit-inner-spin-button,
+    .input-group input[type="number"]::-webkit-outer-spin-button {
+        opacity: 1;
+    }
 </style>
 
 @section Scripts {
@@ -186,8 +211,15 @@
                     if (response.success) {
                         qtyInput.value = newQty;
                         $('#subtotal_' + cartId).text(response.subTotal.toLocaleString('vi-VN'));
-                        $('#totalItems').text(response.totalItems);
-                        $('#totalAmount').text(response.totalAmount.toLocaleString('vi-VN'));
+                        
+                        // Update checkbox data attributes with numeric values
+                        const checkbox = $('#cart_' + cartId);
+                        const subtotalValue = typeof response.subTotal === 'number' ? response.subTotal : parseFloat(response.subTotal);
+                        checkbox.attr('data-quantity', newQty);
+                        checkbox.attr('data-subtotal', subtotalValue);
+                        
+                        // Recalculate totals based on selected items
+                        updateBulkActions();
                         loadCartCount();
                     } else {
                         alert(response.message);
@@ -234,6 +266,82 @@
                 }
             });
         }
+
+        function updateBulkActions() {
+            const checkedBoxes = $('.cart-checkbox:checked');
+            const checkoutButton = $('#checkoutButton');
+            
+            // Calculate total quantity and total amount for selected items
+            let totalQuantity = 0;
+            let totalAmount = 0;
+            
+            checkedBoxes.each(function() {
+                // Get values from data attributes (use attr instead of data to get fresh values)
+                const quantity = parseInt($(this).attr('data-quantity')) || 0;
+                const subtotal = parseFloat($(this).attr('data-subtotal')) || 0;
+                totalQuantity += quantity;
+                totalAmount += subtotal;
+            });
+            
+            // Update summary display
+            $('#totalItems').text(totalQuantity);
+            $('#totalAmount').text(totalAmount.toLocaleString('vi-VN'));
+            
+            if (checkedBoxes.length > 0) {
+                $('#bulkActions').show();
+                checkoutButton.prop('disabled', false);
+            } else {
+                $('#bulkActions').hide();
+                checkoutButton.prop('disabled', true);
+                $('#totalItems').text('0');
+                $('#totalAmount').text('0');
+            }
+        }
+
+        function selectAll() {
+            $('.cart-checkbox').prop('checked', true);
+            updateBulkActions();
+        }
+
+        function deselectAll() {
+            $('.cart-checkbox').prop('checked', false);
+            updateBulkActions();
+        }
+
+        function validateAndSubmit() {
+            const checkedBoxes = $('.cart-checkbox:checked');
+            
+            if (checkedBoxes.length === 0) {
+                alert('Vui lòng chọn ít nhất một sự kiện để đặt chỗ!');
+                return false;
+            }
+
+            // Remove any existing hidden inputs to avoid duplicates
+            $('#checkoutForm input[name="cartIds"]').remove();
+
+            // Add selected cart IDs to form
+            checkedBoxes.each(function() {
+                const cartId = $(this).val();
+                $('#checkoutForm').append('<input type="hidden" name="cartIds" value="' + cartId + '">');
+            });
+
+            const count = checkedBoxes.length;
+            let totalQuantity = 0;
+            checkedBoxes.each(function() {
+                totalQuantity += parseInt($(this).data('quantity')) || 0;
+            });
+            
+            const message = count === 1 
+                ? 'Bạn có muốn đặt chỗ cho 1 sự kiện (' + totalQuantity + ' vé)?' 
+                : 'Bạn có muốn đặt chỗ cho ' + count + ' sự kiện (' + totalQuantity + ' vé)?';
+            
+            return confirm(message);
+        }
+
+        // Initialize on page load
+        $(document).ready(function() {
+            updateBulkActions();
+        });
     </script>
 }
 
