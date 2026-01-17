@@ -206,7 +206,7 @@
                                 </div>
                                 <small class="text-muted">Tối đa @Model.Event.AvailableSeats vé</small>
                             </div>
-                            <button onclick="addToCart(@Model.Event.EventId)" class="btn btn-outline-primary">
+                            <button onclick="addToCart(@Model.Event.EventId)" class="btn btn-success">
                                 <i class="bi bi-cart-plus me-2"></i>Thêm vào giỏ
                             </button>
                             <a asp-controller="Booking" asp-action="Create" asp-route-eventId="@Model.Event.EventId" 
@@ -283,23 +283,89 @@
 
 @section Scripts {
     <script>
+        // Load cart quantity on page load
+        $(document).ready(function() {
+            loadCartQuantityForEventDetail(@Model.Event.EventId, @Model.Event.AvailableSeats);
+        });
+
+        function loadCartQuantityForEventDetail(eventId, availableSeats) {
+            $.ajax({
+                url: '@Url.Action("GetCartQuantityForEvent", "Cart")',
+                type: 'GET',
+                data: { eventId: eventId },
+                success: function(response) {
+                    const cartQuantity = response.quantity || 0;
+                    const maxQuantity = availableSeats - cartQuantity;
+                    const qtyInput = document.getElementById('eventQuantity');
+                    
+                    if (qtyInput) {
+                        qtyInput.setAttribute('data-cart-qty', cartQuantity);
+                        qtyInput.setAttribute('data-max-available', maxQuantity);
+                        qtyInput.max = maxQuantity;
+                        
+                        // Update the small text
+                        const smallText = qtyInput.closest('.mb-3').querySelector('small');
+                        if (smallText) {
+                            if (cartQuantity > 0) {
+                                smallText.textContent = 'Tối đa ' + maxQuantity + ' vé (đã có ' + cartQuantity + ' vé trong giỏ)';
+                            } else {
+                                smallText.textContent = 'Tối đa ' + maxQuantity + ' vé';
+                            }
+                        }
+                        
+                        // If current quantity exceeds max, set to max
+                        const currentQty = parseInt(qtyInput.value) || 1;
+                        if (currentQty > maxQuantity) {
+                            qtyInput.value = maxQuantity > 0 ? maxQuantity : 1;
+                        }
+                    }
+                },
+                error: function() {
+                    // If error, use available seats as max
+                    const qtyInput = document.getElementById('eventQuantity');
+                    if (qtyInput) {
+                        qtyInput.max = @Model.Event.AvailableSeats;
+                    }
+                }
+            });
+        }
+
         function changeQuantity(change) {
             const qtyInput = document.getElementById('eventQuantity');
             let currentQty = parseInt(qtyInput.value) || 1;
             let newQty = currentQty + change;
-            const maxQty = parseInt(qtyInput.max) || @Model.Event.AvailableSeats;
+            
+            const cartQuantity = parseInt(qtyInput.getAttribute('data-cart-qty')) || 0;
+            const maxAvailable = parseInt(qtyInput.getAttribute('data-max-available')) || @Model.Event.AvailableSeats;
             
             if (newQty < 1) {
                 newQty = 1;
-            } else if (newQty > maxQty) {
-                newQty = maxQty;
+            } else if (newQty > maxAvailable) {
+                newQty = maxAvailable;
+                if (cartQuantity > 0) {
+                    alert('Trong giỏ hàng đã có ' + cartQuantity + ' vé rồi. Bạn chỉ có thể thêm tối đa ' + maxAvailable + ' vé.');
+                } else {
+                    alert('Số lượng tối đa là ' + maxAvailable);
+                }
             }
             
             qtyInput.value = newQty;
         }
 
         function addToCart(eventId) {
-            const quantity = parseInt(document.getElementById('eventQuantity').value) || 1;
+            const qtyInput = document.getElementById('eventQuantity');
+            const quantity = parseInt(qtyInput.value) || 1;
+            const cartQuantity = parseInt(qtyInput.getAttribute('data-cart-qty')) || 0;
+            const maxAvailable = parseInt(qtyInput.getAttribute('data-max-available')) || @Model.Event.AvailableSeats;
+            
+            if (quantity > maxAvailable) {
+                if (cartQuantity > 0) {
+                    alert('Trong giỏ hàng đã có ' + cartQuantity + ' vé rồi. Bạn chỉ có thể thêm tối đa ' + maxAvailable + ' vé.');
+                } else {
+                    alert('Số lượng vượt quá số chỗ trống còn lại.');
+                }
+                return;
+            }
             
             $.ajax({
                 url: '@Url.Action("Add", "Cart")',
@@ -315,6 +381,8 @@
                         if (typeof loadCartCount === 'function') {
                             loadCartCount();
                         }
+                        // Reload cart quantity for this event
+                        loadCartQuantityForEventDetail(eventId, @Model.Event.AvailableSeats);
                     } else {
                         alert(response.message);
                     }

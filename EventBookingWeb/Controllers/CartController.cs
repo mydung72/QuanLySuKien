@@ -256,6 +256,24 @@ namespace EventBookingWeb.Controllers
                 return Json(new { count = 0 });
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCartQuantityForEvent(int eventId)
+        {
+            try
+            {
+                var userId = int.Parse(HttpContext.Session.GetString("UserId") ?? "0");
+                var cartItem = await _context.Carts
+                    .FirstOrDefaultAsync(c => c.UserId == userId && c.EventId == eventId);
+
+                var quantity = cartItem?.Quantity ?? 0;
+                return Json(new { quantity });
+            }
+            catch
+            {
+                return Json(new { quantity = 0 });
+            }
+        }
     }
 }
 

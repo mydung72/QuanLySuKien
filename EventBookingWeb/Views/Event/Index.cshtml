@@ -127,41 +127,59 @@
                                 <div class="event-card-meta">
                                     <div><i class="bi bi-clock-fill text-primary"></i> @eventItem.StartDate.ToString("HH:mm, dd/MM/yyyy")</div>
                                     <div><i class="bi bi-geo-alt-fill text-primary"></i> @eventItem.Location</div>
-                                    <div><i class="bi bi-ticket-fill text-primary"></i> <strong>@eventItem.TicketPrice.ToString("N0") VNĐ</strong></div>
+                                    <div class="mb-0"><i class="bi bi-ticket-fill text-primary"></i> <strong>@eventItem.TicketPrice.ToString("N0") VNĐ</strong></div>
                                 </div>
                             </div>
                         </a>
                         <div class="event-card-footer">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="badge @(eventItem.AvailableSeats > 0 ? "bg-success-light text-success" : "bg-danger-light text-danger")">
-                                    <i class="bi bi-people-fill me-1"></i>
-                                    @if (eventItem.AvailableSeats > 0)
-                                    {
-                                        <text>Còn @eventItem.AvailableSeats chỗ</text>
-                                    }
-                                    else
-                                    {
-                                        <text>Hết chỗ</text>
-                                    }
-                                </span>
-                            </div>
                             @if (!string.IsNullOrEmpty(Context.Session.GetString("UserId")) && eventItem.AvailableSeats > 0 && eventItem.StartDate > DateTime.Now)
                             {
-                                <div class="mb-2">
-                                    <label class="form-label small text-muted mb-1">Số lượng vé</label>
-                                    <div class="input-group input-group-sm" style="max-width: 150px;">
-                                        <button class="btn btn-outline-secondary" type="button" onclick="event.stopPropagation(); changeEventQuantity(@eventItem.EventId, -1)">
-                                            <i class="bi bi-dash"></i>
-                                        </button>
-                                        <input type="number" class="form-control text-center" id="eventQty_@eventItem.EventId" value="1" min="1" max="@eventItem.AvailableSeats" style="line-height: 1.5; padding: 0.25rem 0.5rem;" readonly>
-                                        <button class="btn btn-outline-secondary" type="button" onclick="event.stopPropagation(); changeEventQuantity(@eventItem.EventId, 1)">
-                                            <i class="bi bi-plus"></i>
-                                        </button>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <label class="form-label small text-muted mb-1">Số lượng vé</label>
+                                        <div class="input-group input-group-sm" style="max-width: 150px;">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="event.stopPropagation(); changeEventQuantity(@eventItem.EventId, -1, @eventItem.AvailableSeats)">
+                                                <i class="bi bi-dash"></i>
+                                            </button>
+                                            <input type="number" class="form-control text-center" id="eventQty_@eventItem.EventId" value="1" min="1" data-max="@eventItem.AvailableSeats" data-eventid="@eventItem.EventId" style="line-height: 1.5; padding: 0.25rem 0.5rem;" readonly>
+                                            <button class="btn btn-outline-secondary" type="button" onclick="event.stopPropagation(); changeEventQuantity(@eventItem.EventId, 1, @eventItem.AvailableSeats)">
+                                                <i class="bi bi-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge @(eventItem.AvailableSeats > 0 ? "bg-success-light text-success" : "bg-danger-light text-danger")">
+                                            <i class="bi bi-people-fill me-1"></i>
+                                            @if (eventItem.AvailableSeats > 0)
+                                            {
+                                                <text>Còn @eventItem.AvailableSeats chỗ</text>
+                                            }
+                                            else
+                                            {
+                                                <text>Hết chỗ</text>
+                                            }
+                                        </span>
                                     </div>
                                 </div>
-                                <button onclick="event.stopPropagation(); addToCartEvent(@eventItem.EventId)" class="btn btn-outline-success btn-sm w-100 mb-2">
+                                <button onclick="event.stopPropagation(); addToCartEvent(@eventItem.EventId)" class="btn btn-success btn-sm w-100 mb-2">
                                     <i class="bi bi-cart-plus me-1"></i>Thêm vào giỏ
                                 </button>
+                            }
+                            else
+                            {
+                                <div class="d-flex justify-content-center mb-2">
+                                    <span class="badge @(eventItem.AvailableSeats > 0 ? "bg-success-light text-success" : "bg-danger-light text-danger")">
+                                        <i class="bi bi-people-fill me-1"></i>
+                                        @if (eventItem.AvailableSeats > 0)
+                                        {
+                                            <text>Còn @eventItem.AvailableSeats chỗ</text>
+                                        }
+                                        else
+                                        {
+                                            <text>Hết chỗ</text>
+                                        }
+                                    </span>
+                                </div>
                             }
                             <a asp-action="Details" asp-route-id="@eventItem.EventId" class="btn btn-primary btn-sm w-100">
                                 <i class="bi bi-info-circle me-1"></i>Xem chi tiết
