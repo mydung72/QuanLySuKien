@@ -59,7 +59,7 @@
             foreach (var eventItem in upcomingEvents)
             {
                 <div class="col-lg-4 col-md-6">
-                    <div class="event-card h-100">
+                    <div class="event-card h-70">
                         <a asp-controller="Event" asp-action="Details" asp-route-id="@eventItem.EventId" class="text-decoration-none text-dark">
                             <div class="event-card-image" style="cursor: pointer;">
                                 <img src="@eventItem.ImageUrl" alt="@eventItem.Title">
