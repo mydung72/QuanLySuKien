@@ -84,13 +84,30 @@ namespace EventBookingWeb.Controllers
                     UserId = userId,
                     Quantity = model.Quantity,
                     TotalAmount = (decimal)(model.Quantity * eventToBook.TicketPrice),
-                    PaymentStatus = PaymentStatus.Pending,
-                    PaymentMethod = "Pending",
+                    PaymentStatus = PaymentStatus.Reserved,
+                    PaymentMethod = "Thanh toán tại sự kiện",
                     BookingDate = DateTime.Now
                 };
 
                 _context.Bookings.Add(booking);
                 eventToBook.AvailableSeats -= model.Quantity;
+                await _context.SaveChangesAsync();
+
+                // Tạo vé ngay lập tức (thanh toán trực tiếp tại sự kiện)
+                for (int i = 0; i < booking.Quantity; i++)
+                {
+                    var ticketCode = PaymentHelper.GenerateTicketCode();
+                    var ticket = new DBTicket
+                    {
+                        TicketId = 0,
+                        BookingID = booking.BookingId,
+                        UserID = booking.UserId,
+                        TicketCode = ticketCode,
+                        QRCodeData = ticketCode,
+                        CreatedAt = DateTime.Now
+                    };
+                    _context.Tickets.Add(ticket);
+                }
                 await _context.SaveChangesAsync();
 
                 // Send booking confirmation email
@@ -107,7 +124,8 @@ namespace EventBookingWeb.Controllers
                         booking.TotalAmount);
                 }
 
-                return RedirectToAction("Payment", new { bookingId = booking.BookingId });
+                TempData["Success"] = "Đặt chỗ thành công! Vui lòng thanh toán tại sự kiện.";
+                return RedirectToAction("MyTickets", "Ticket");
             }
             catch (Exception ex)
             {
@@ -177,9 +195,8 @@ namespace EventBookingWeb.Controllers
             if (booking == null)
                 return NotFound();
 
-            // Generate booking code and QR code
+            // Generate booking code
             var bookingCode = $"BK{booking.BookingId:D6}";
-            var qrCodeBase64 = _qrCodeService.GenerateQRCode(bookingCode);
 
             var viewModel = new BookingDetailViewModel
             {
@@ -195,9 +212,9 @@ namespace EventBookingWeb.Controllers
                 CanCancel = booking.PaymentStatus != PaymentStatus.Cancelled && 
                            booking.PaymentStatus != PaymentStatus.Refunded &&
                            booking.Event.StartDate > DateTime.Now,
-                CanViewTickets = booking.PaymentStatus == PaymentStatus.Paid,
+                CanViewTickets = booking.PaymentStatus == PaymentStatus.Paid || booking.PaymentStatus == PaymentStatus.Reserved,
                 BookingCode = bookingCode,
-                QRCodeBase64 = qrCodeBase64
+                QRCodeBase64 = string.Empty // Không cần QR code cho booking
             };
 
             return View(viewModel);
@@ -353,13 +370,13 @@ namespace EventBookingWeb.Controllers
                     }
 
                     TempData["Success"] = "Thanh toán thành công";
+                return RedirectToAction("MyTickets", "Ticket");
                 }
                 else
                 {
                     TempData["Error"] = "Thanh toán thất bại";
+                    return RedirectToAction("Details", new { id = bookingId });
                 }
-
-                return RedirectToAction("Details", new { id = bookingId });
             }
             catch (Exception ex)
             {
@@ -425,9 +442,25 @@ namespace EventBookingWeb.Controllers
 
                     _context.Bookings.Add(booking);
                     cartItem.Event.AvailableSeats -= cartItem.Quantity;
-                    
                     await _context.SaveChangesAsync();
                     createdBookings.Add(booking.BookingId);
+
+                    // Tạo vé ngay lập tức (thanh toán trực tiếp tại sự kiện)
+                    for (int i = 0; i < booking.Quantity; i++)
+                    {
+                        var ticketCode = PaymentHelper.GenerateTicketCode();
+                        var ticket = new DBTicket
+                        {
+                            TicketId = 0,
+                            BookingID = booking.BookingId,
+                            UserID = booking.UserId,
+                            TicketCode = ticketCode,
+                            QRCodeData = ticketCode,
+                            CreatedAt = DateTime.Now
+                        };
+                        _context.Tickets.Add(ticket);
+                    }
+                    await _context.SaveChangesAsync();
 
                     // Send booking confirmation email
                     if (user != null)
@@ -448,7 +481,7 @@ namespace EventBookingWeb.Controllers
                 await _context.SaveChangesAsync();
 
                 TempData["Success"] = $"Đã tạo {createdBookings.Count} đơn đặt chỗ thành công";
-                return RedirectToAction("MyBookings");
+                return RedirectToAction("MyTickets", "Ticket");
             }
             catch (Exception ex)
             {

@@ -431,10 +431,10 @@ a:hover {
    =========================== */
 
 .footer {
-  background-color: var(--surface);
-  border-top: 1px solid var(--border);
-  margin-top: var(--spacing-3xl);
-  color: var(--text-secondary);
+    background-color: currentcolor;
+    border-top: 1px solid var(--border);
+    margin-top: var(--spacing-3xl);
+    color: var(--text-secondary);
 }
 
 .footer-link {

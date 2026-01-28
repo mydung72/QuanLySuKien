@@ -1,51 +1,85 @@
 @model EventBookingWeb.ViewModels.Ticket.TicketListViewModel
 @{
     ViewData["Title"] = "Vé của tôi";
+    var now = DateTime.Now;
 }
 
-<div class="container mt-4">
+<div class="container my-4">
+    <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-ticket-perforated me-2"></i>Vé của tôi</h2>
+        <div>
+            <h2 class="mb-1">
+                <i class="bi bi-ticket-perforated text-primary me-2"></i>Vé sắp tới
+            </h2>
+            <p class="text-muted mb-0">Vé cho các sự kiện sắp diễn ra</p>
+        </div>
         <a asp-controller="Booking" asp-action="MyBookings" class="btn btn-outline-primary">
-            <i class="bi bi-arrow-left me-1"></i> Xem lịch sử đặt chỗ
+            <i class="bi bi-clock-history me-1"></i>Lịch sử đặt chỗ
         </a>
     </div>
 
     @if (Model.Tickets.Any())
     {
-        <div class="row">
+        <!-- Tickets Grid -->
+        <div class="row g-4 mb-4">
             @foreach (var ticket in Model.Tickets)
             {
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card h-100 ticket-card shadow-sm">
-                        <div class="position-relative">
-                            <img src="@ticket.EventImageUrl" class="card-img-top" alt="@ticket.EventTitle" style="height: 180px; object-fit: cover;">
-                            <div class="position-absolute top-0 end-0 m-2">
-                                <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Hợp lệ</span>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 ticket-card border-0 shadow-sm">
+                        <div class="position-relative ticket-image-wrapper">
+                            <img src="@ticket.EventImageUrl" class="card-img-top" alt="@ticket.EventTitle" style="height: 200px; object-fit: cover;">
+                            <div class="position-absolute top-0 end-0 m-3">
+                                <span class="badge bg-success px-3 py-2">
+                                    <i class="bi bi-check-circle me-1"></i>Hợp lệ
+                                </span>
+                            </div>
+                            <div class="position-absolute bottom-0 start-0 end-0 p-3" style="background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);">
+                                <div class="text-white">
+                                    <small class="d-block mb-1">
+                                        <i class="bi bi-calendar-event me-1"></i>
+                                        @if ((ticket.EventStartDate - now).TotalHours < 24)
+                                        {
+                                            if ((ticket.EventStartDate - now).TotalHours < 1)
+                                            {
+                                                <strong>SẮP BẮT ĐẦU</strong>
+                                            }
+                                            else
+                                            {
+                                                <strong>HÔM NAY - @ticket.EventStartDate.ToString("HH:mm")</strong>
+                                            }
+                                        }
+                                        else if ((ticket.EventStartDate - now).TotalDays < 7)
+                                        {
+                                            <text>@((int)(ticket.EventStartDate - now).TotalDays) ngày nữa</text>
+                                        }
+                                        else
+                                        {
+                                            <text>@ticket.EventStartDate.ToString("dd/MM/yyyy")</text>
+                                        }
+                                    </small>
+                                </div>
                             </div>
                         </div>
                         <div class="card-body">
-                            <h5 class="card-title text-truncate" title="@ticket.EventTitle">@ticket.EventTitle</h5>
+                            <h5 class="card-title mb-3">@ticket.EventTitle</h5>
                             <div class="mb-3">
-                                <p class="mb-1 text-muted">
-                                    <i class="bi bi-calendar-event me-2"></i>@ticket.EventStartDate.ToString("dd/MM/yyyy HH:mm")
-                                </p>
-                                <p class="mb-1">
-                                    <i class="bi bi-upc me-2"></i><strong>Mã vé:</strong> 
-                                    <span class="font-monospace text-primary">@ticket.TicketCode</span>
-                                </p>
-                                <p class="mb-0 text-muted small">
-                                    <i class="bi bi-clock me-2"></i>Ngày mua: @ticket.CreatedAt.ToString("dd/MM/yyyy")
-                                </p>
+                                <div class="d-flex align-items-center text-muted small mb-2">
+                                    <i class="bi bi-clock-fill text-primary me-2"></i>
+                                    <span>@ticket.EventStartDate.ToString("HH:mm, dd/MM/yyyy")</span>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="bi bi-upc-scan text-primary me-2"></i>
+                                    <code class="text-primary bg-light px-2 py-1 rounded">@ticket.TicketCode</code>
+                                </div>
                             </div>
                         </div>
-                        <div class="card-footer bg-transparent border-top-0">
+                        <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-3">
                             <div class="d-grid gap-2">
                                 <a asp-action="Details" asp-route-id="@ticket.TicketId" class="btn btn-primary">
-                                    <i class="bi bi-qr-code me-1"></i> Xem vé & QR Code
+                                    <i class="bi bi-qr-code me-1"></i>Xem vé & QR Code
                                 </a>
-                                <a asp-action="Download" asp-route-id="@ticket.TicketId" class="btn btn-outline-secondary">
-                                    <i class="bi bi-download me-1"></i> Tải PDF
+                                <a asp-action="Download" asp-route-id="@ticket.TicketId" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-download me-1"></i>Tải PDF
                                 </a>
                             </div>
                         </div>
@@ -57,7 +91,7 @@
         <!-- Pagination -->
         @if (Model.TotalPages > 1)
         {
-            <nav aria-label="Page navigation" class="mt-4">
+            <nav aria-label="Phân trang" class="mt-4">
                 <ul class="pagination justify-content-center">
                     @if (Model.CurrentPage > 1)
                     {
@@ -67,12 +101,14 @@
                             </a>
                         </li>
                     }
+                    
                     @for (int i = 1; i <= Model.TotalPages; i++)
                     {
                         <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
                             <a class="page-link" href="?page=@i">@i</a>
                         </li>
                     }
+                    
                     @if (Model.CurrentPage < Model.TotalPages)
                     {
                         <li class="page-item">
@@ -87,32 +123,68 @@
     }
     else
     {
-        <div class="text-center py-5">
-            <div class="mb-4">
-                <i class="bi bi-ticket-perforated display-1 text-muted"></i>
+        <!-- Empty State -->
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <div class="mb-4">
+                            <i class="bi bi-ticket-perforated display-1 text-muted"></i>
+                        </div>
+                        <h3 class="mb-3">Chưa có vé sắp tới</h3>
+                        <p class="text-muted mb-4">Bạn chưa có vé nào cho các sự kiện sắp diễn ra. Hãy khám phá và đặt vé ngay!</p>
+                        <a asp-controller="Event" asp-action="Index" class="btn btn-primary btn-lg">
+                            <i class="bi bi-search me-2"></i>Khám phá sự kiện
+                        </a>
+                    </div>
+                </div>
             </div>
-            <h4 class="text-muted">Bạn chưa có vé nào</h4>
-            <p class="text-muted">Hãy đặt vé tham gia sự kiện để nhận vé điện tử!</p>
-            <a asp-controller="Event" asp-action="Index" class="btn btn-primary mt-3">
-                <i class="bi bi-search me-1"></i> Khám phá sự kiện
-            </a>
         </div>
     }
 </div>
 
 <style>
     .ticket-card {
-        transition: transform 0.2s, box-shadow 0.2s;
-        border-radius: 12px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 16px;
         overflow: hidden;
     }
+    
     .ticket-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+        transform: translateY(-8px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15) !important;
     }
-    .font-monospace {
+    
+    .ticket-image-wrapper {
+        overflow: hidden;
+    }
+    
+    .ticket-card:hover .card-img-top {
+        transform: scale(1.08);
+    }
+    
+    .card-img-top {
+        transition: transform 0.5s ease;
+    }
+    
+    code {
         font-family: 'Courier New', monospace;
         font-weight: 600;
+        font-size: 0.875rem;
+    }
+    
+    .badge {
+        backdrop-filter: blur(4px);
+    }
+    
+    .page-link {
+        border-radius: 8px;
+        margin: 0 2px;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .page-item.active .page-link {
+        background-color: #2563eb;
+        border-color: #2563eb;
     }
 </style>
-
